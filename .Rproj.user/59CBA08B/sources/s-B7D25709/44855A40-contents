@@ -1,0 +1,9 @@
+name: 'André Victor Ribeiro Amaral'
+output_dir: '.'
+navbar:
+  title: 'STAT 294'
+  left:
+    - text: 'Home'
+      href: index.html
+    - text: 'Git and GitHub'
+      href: git.html
