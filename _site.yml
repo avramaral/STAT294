@@ -1,5 +1,5 @@
 name: 'André Victor Ribeiro Amaral'
-output_dir: '.'
+output_dir: 'docs'
 navbar:
   title: 'STAT 294'
   left:
