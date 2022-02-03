@@ -1,5 +1,139 @@
 ---
 title: 'Git and Github Tutorial Session'
+author: 'André Victor Ribeiro Amaral'
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
 ---
 
-Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+# Introduction
+
+**Git** is a *distributed version control system* software for tracking changes in any set of files, usually used for coordinating work among programmers collaboratively developing source code during software development. On the other hand, **GitHub** is a cloud platform for software development and *version control* using Git (adapted from [here](https://en.wikipedia.org/wiki/Git) and [here](https://en.wikipedia.org/wiki/GitHub)).
+
+<div class = 'space'></div>
+## Installation
+
+To download and install Git, refer to [https://git-scm.com/downloads](https://git-scm.com/downloads) (or [https://github.com/git-guides/install-git](https://github.com/git-guides/install-git)). And to verify if Git was successfully installed, type `git --version` on the terminal.
+
+To create a GitHub account, go to [https://github.com/](https://github.com/), click on `Sign Up`, and follow the instructions.
+
+<div class = 'space'></div>
+# General Procedure
+
+After navigating to the desired folder on the terminal using the `cd` command, and creating a local repository using the `git init` command, the general can be expressed through the following image (the below diagram was inspired by [this video](https://www.youtube.com/watch?v=3fUbBnN_H2c))
+
+<div class = 'space'></div>
+
+![](images/general_idea.png)
+
+<div class = 'space'></div>
+
+Meaning that we can use the `git add`, `git commit`, `git push`, and `git clone` commands to move files along compartments. Also, notice that the changes are tracked and saved in the **Commit history**.
+
+<div class = 'space'></div>
+# First steps
+
+After installing Git, it is important to set an username and your email address (the same as from your GitHub account). To do this, on the terminal
+```{bash, eval = FALSE}
+git config --global user.name 'username'
+git config --global user.email 'email@email.com'
+```
+Replacing `'username'` and `'email@email.com'` by the appropriate values.
+
+And to check the values, one can use the following commands
+```{bash, eval = FALSE}
+git config user.name
+git config user.email
+```
+
+Although the next step is not mandatory, it is a good practice to change the name of the main branch from `master` to `main`, (for consistency with GitHub guidelines). We can do this using the following command
+```{bash, eval = FALSE}
+git config --global init.defaultBranch main
+```
+
+<div class = 'space'></div>
+## Creating your first repository
+
+Let's create our first repository. To do this, on the terminal (if on Windows, the `cmd`), navigate to your `Desktop` directory, and create a new folder named `STAT294`. Depending on your directories structure, you can do this in the following way
+```{bash, eval = FALSE}
+cd ~/Desktop/
+mkdir STAT294
+cd STAT294
+```
+
+Finally, to create/initialize a repository, use the `git init` command. That is,
+```{bash, eval = FALSE}
+git init
+```
+
+To make sure that a repository was created, you can look for the `.git` folder by typing the `ls -a` command. On the other hand, if you want to delete the `.git` folder (and therefore, the repository settings), you can type `rm -rf .git`.
+
+<div class = 'space'></div>
+## Moving files to the Staging area
+
+Now, let’s create some non-significant files on `/STAT294/`, so that we can see how to work with them. You can do this by typing `touch file1.R file2.R` (or you can create them manually). For this situation, we would have the following files structure
+
+```{bash, eval = FALSE}
+Desktop/
+└── STAT294/
+    ├── .git/
+    ├── file1.R
+    └── file2.R
+```
+
+To see these files' status, you can use the `git status` command.
+
+Also, you can send a file (e.g., `file1.R`) to the **Staging area** with the `git add file1.R` command (to send all files at once, use `git add .`).
+
+After doing this, run `git status` again.
+
+You can remove a file (e.g., `file1.R`) from the **Staging area** with the `git rm --cached file1.R` command. After doing this, run the `git status` command one more time. 
+
+Before going to the next subsection send all files to the **Staging area** with
+```{bash, eval = FALSE}
+git add .
+```
+
+<div class = 'space'></div>
+## Creating commits
+
+A **commit** can be seen as a *safe point*. Meaning that you can always refer back to them, if needed. To create a commit (based on the **Staging area**), use the following command
+```{bash, eval = FALSE}
+git commit -m 'meaningful but short message'
+```
+
+For example, you can start your list of commits with the following command
+```{bash, eval = FALSE}
+git commit -m 'initial commit'
+```
+
+You can check the status of your repository using the `git status` command. Also, to see the log of commits, use the `git log` command.
+
+Now, modify `file1.R` and do all steps again. In particular, use the following commands
+```{bash, eval = FALSE}
+nano file1.R (to modify the file1.R)
+git status
+git add .
+git status
+git commit -m 'modify file 1'
+git status
+git log
+```
+
+To go back in time and revert your project to one of your safe points (i.e., to one of your previous commits), you can use the following commands
+```{bash, eval = FALSE}
+git log (and copy the commit key; e.g., 42037c4bf5c1fe189a62632b393f6971979d8bf4)
+git revert --no-commit 42037c4bf5c1fe189a62632b393f6971979d8bf4..HEAD
+git commit -m 'back to old version X'
+```
+
+Notice that there are different ways to do this (getting back to a point in the past), but **never** delete your history of commits. After all, that is the main reason why you should use Git: **for tracking your changes**.
+
+If you want to visit older commits, use the `git checkout (commit key)` command. To come back, use the `git switch -` command.
+
+<div class = 'space'></div>
+## Pushing files to GitHub
+
+To be completed.

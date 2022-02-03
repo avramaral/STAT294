@@ -7,3 +7,6 @@ navbar:
       href: index.html
     - text: 'Git and GitHub'
       href: git.html
+output:
+  html_document:
+    css: style.css

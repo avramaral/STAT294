@@ -1,3 +1,5 @@
 ---
-title: ''
+title: 'Contemporary Topic in Statistics (STAT 294)'
 ---
+
+This page provides auxiliary material for the [Contemporary Topic in Statistics (STAT 294) course](https://www.paulamoraga.com/book-r/index.html), by Dr. Paula Moraga. For accessing the entire course material, please refer to the [course webpage](https://www.paulamoraga.com/book-r/index.html).

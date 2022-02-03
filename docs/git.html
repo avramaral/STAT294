@@ -9,6 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="André Victor Ribeiro Amaral" />
 
 
 <title>Git and Github Tutorial Session</title>
@@ -29,6 +30,9 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -57,6 +61,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="style.css" type="text/css" />
 
 
 
@@ -218,6 +223,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -225,6 +293,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -260,14 +338,121 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Git and Github Tutorial Session</h1>
+<h4 class="author">André Victor Ribeiro Amaral</h4>
 
 </div>
 
 
-<p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of “de Finibus Bonorum et Malorum” (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, “Lorem ipsum dolor sit amet..”, comes from a line in section 1.10.32.</p>
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p><strong>Git</strong> is a <em>distributed version control system</em> software for tracking changes in any set of files, usually used for coordinating work among programmers collaboratively developing source code during software development. On the other hand, <strong>GitHub</strong> is a cloud platform for software development and <em>version control</em> using Git (adapted from <a href="https://en.wikipedia.org/wiki/Git">here</a> and <a href="https://en.wikipedia.org/wiki/GitHub">here</a>).</p>
+<div class="space">
+
+</div>
+<div id="installation" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Installation</h2>
+<p>To download and install Git, refer to <a href="https://git-scm.com/downloads">https://git-scm.com/downloads</a> (or <a href="https://github.com/git-guides/install-git">https://github.com/git-guides/install-git</a>). And to verify if Git was successfully installed, type <code>git --version</code> on the terminal.</p>
+<p>To create a GitHub account, go to <a href="https://github.com/">https://github.com/</a>, click on <code>Sign Up</code>, and follow the instructions.</p>
+<div class="space">
+
+</div>
+</div>
+</div>
+<div id="general-procedure" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> General Procedure</h1>
+<p>After navigating to the desired folder on the terminal using the <code>cd</code> command, and creating a local repository using the <code>git init</code> command, the general can be expressed through the following image (the below diagram was inspired by <a href="https://www.youtube.com/watch?v=3fUbBnN_H2c">this video</a>)</p>
+<div class="space">
+
+</div>
+<p><img src="images/general_idea.png" /></p>
+<div class="space">
+
+</div>
+<p>Meaning that we can use the <code>git add</code>, <code>git commit</code>, <code>git push</code>, and <code>git clone</code> commands to move files along compartments. Also, notice that the changes are tracked and saved in the <strong>Commit history</strong>.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="first-steps" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> First steps</h1>
+<p>After installing Git, it is important to set an username and your email address (the same as from your GitHub account). To do this, on the terminal</p>
+<pre class="bash"><code>git config --global user.name &#39;username&#39;
+git config --global user.email &#39;email@email.com&#39;</code></pre>
+<p>Replacing <code>'username'</code> and <code>'email@email.com'</code> by the appropriate values.</p>
+<p>And to check the values, one can use the following commands</p>
+<pre class="bash"><code>git config user.name
+git config user.email</code></pre>
+<p>Although the next step is not mandatory, it is a good practice to change the name of the main branch from <code>master</code> to <code>main</code>, (for consistency with GitHub guidelines). We can do this using the following command</p>
+<pre class="bash"><code>git config --global init.defaultBranch main</code></pre>
+<div class="space">
+
+</div>
+<div id="creating-your-first-repository" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Creating your first repository</h2>
+<p>Let’s create our first repository. To do this, on the terminal (if on Windows, the <code>cmd</code>), navigate to your <code>Desktop</code> directory, and create a new folder named <code>STAT294</code>. Depending on your directories structure, you can do this in the following way</p>
+<pre class="bash"><code>cd ~/Desktop/
+mkdir STAT294
+cd STAT294</code></pre>
+<p>Finally, to create/initialize a repository, use the <code>git init</code> command. That is,</p>
+<pre class="bash"><code>git init</code></pre>
+<p>To make sure that a repository was created, you can look for the <code>.git</code> folder by typing the <code>ls -a</code> command. On the other hand, if you want to delete the <code>.git</code> folder (and therefore, the repository settings), you can type <code>rm -rf .git</code>.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="moving-files-to-the-staging-area" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Moving files to the Staging area</h2>
+<p>Now, let’s create some non-significant files on <code>/STAT294/</code>, so that we can see how to work with them. You can do this by typing <code>touch file1.R file2.R</code> (or you can create them manually). For this situation, we would have the following files structure</p>
+<pre class="bash"><code>Desktop/
+└── STAT294/
+    ├── .git/
+    ├── file1.R
+    └── file2.R</code></pre>
+<p>To see these files’ status, you can use the <code>git status</code> command.</p>
+<p>Also, you can send a file (e.g., <code>file1.R</code>) to the <strong>Staging area</strong> with the <code>git add file1.R</code> command (to send all files at once, use <code>git add .</code>).</p>
+<p>After doing this, run <code>git status</code> again.</p>
+<p>You can remove a file (e.g., <code>file1.R</code>) from the <strong>Staging area</strong> with the <code>git rm --cached file1.R</code> command. After doing this, run the <code>git status</code> command one more time.</p>
+<p>Before going to the next subsection send all files to the <strong>Staging area</strong> with</p>
+<pre class="bash"><code>git add .</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="creating-commits" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Creating commits</h2>
+<p>A <strong>commit</strong> can be seen as a <em>safe point</em>. Meaning that you can always refer back to them, if needed. To create a commit (based on the <strong>Staging area</strong>), use the following command</p>
+<pre class="bash"><code>git commit -m &#39;meaningful but short message&#39;</code></pre>
+<p>For example, you can start your list of commits with the following command</p>
+<pre class="bash"><code>git commit -m &#39;initial commit&#39;</code></pre>
+<p>You can check the status of your repository using the <code>git status</code> command. Also, to see the log of commits, use the <code>git log</code> command.</p>
+<p>Now, modify <code>file1.R</code> and do all steps again. In particular, use the following commands</p>
+<pre class="bash"><code>nano file1.R (to modify the file1.R)
+git status
+git add .
+git status
+git commit -m &#39;modify file 1&#39;
+git status
+git log</code></pre>
+<p>To go back in time and revert your project to one of your safe points (i.e., to one of your previous commits), you can use the following commands</p>
+<pre class="bash"><code>git log (and copy the commit key; e.g., 42037c4bf5c1fe189a62632b393f6971979d8bf4)
+git revert --no-commit 42037c4bf5c1fe189a62632b393f6971979d8bf4..HEAD
+git commit -m &#39;back to old version X&#39;</code></pre>
+<p>Notice that there are different ways to do this (getting back to a point in the past), but <strong>never</strong> delete your history of commits. After all, that is the main reason why you should use Git: <strong>for tracking your changes</strong>.</p>
+<p>If you want to visit older commits, use the <code>git checkout (commit key)</code> command. To come back, use the <code>git switch -</code> command.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="pushing-files-to-github" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Pushing files to GitHub</h2>
+<p>To be completed.</p>
+</div>
+</div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -300,6 +485,35 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
