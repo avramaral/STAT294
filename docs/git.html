@@ -475,7 +475,7 @@ git push -u origin main</code></pre>
 </ol>
 <pre class="bash"><code>ssh-keygen -t ed25519 -C &#39;email@email.com&#39;</code></pre>
 <p>The above command will create a new SSH key using your email address as a label. As a remark, you can accept the default file location and create an empty password. 2. Now, you will add your SSH key to the ssh-agent. To do this, use the following command</p>
-<pre class="bash"><code>eval &#39;$(ssh-agent -s)&#39;</code></pre>
+<pre class="bash"><code>eval &quot;$(ssh-agent -s)&quot;</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>The next step is to modify your <code>~/.ssh/config</code> file to automatically load keys into the ssh-agent. This can be done by using the following command</li>
 </ol>
@@ -527,8 +527,48 @@ git push origin main</code></pre>
 <li>On the terminal, navigate to the desired folder using the <code>cd</code> command, and type</li>
 </ol>
 <pre class="bash"><code>git clone https://github.com/user/repository.git</code></pre>
-<p>If the repository got updated and you want to incorporate these changes, you can use the <code>git pull</code> command. To check the linked remote repositories, you may use <code>git remote -v</code>; and if there are more than one, it may be necessary to specify it through the more complete (for example) <code>git pull origin</code> command. After getting a copy, <strong>all other commands can be applied</strong>.</p>
+<p>If the repository got updated and you want to incorporate these changes, you can use the <code>git pull</code> command. To check the linked remote repositories, you may use <code>git remote -v</code>; and if there are more than one, it may be necessary to specify it through the more complete (for example) <code>git pull origin</code> command. After getting a copy (of a repository that you own), <strong>all other commands can be applied</strong>.</p>
+<div class="space">
+
 </div>
+</div>
+</div>
+<div id="creating-a-page-with-github-pages" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Creating a page with GitHub pages</h1>
+<p>Using the <a href="https://pages.github.com/">GitHub Pages</a>, it is possible to create a free web page with unique domain. For this tutorial session, we will use an <a href="https://avramaral.github.io/blog_demo/">already created template</a>, as in the below image.</p>
+<div class="space">
+
+</div>
+<p><img src="images/webpage.png" /></p>
+<div class="space">
+
+</div>
+<p>To do this, take the following steps.</p>
+<ol style="list-style-type: decimal">
+<li>Using the terminal, navigate to the desired folder, and clone <a href="https://github.com/avramaral/blog_demo">this repository</a>.</li>
+</ol>
+<pre class="bash"><code>https://github.com/avramaral/blog_demo.git</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Modify the files in whatever way you want. Notice that this is a very simple static page with a single <code>.html</code> file. Much more complex static websites can be created. For instance, people use <a href="https://jekyllrb.com/">Jekyll</a> as a static site generator. However, later in this course you will see how to create static web pages using <code>R</code> and <code>RStudio</code>.</li>
+<li>(<strong>Optional</strong>). As you do not own this repository, and you are using the corresponding files just to initialize your project, I suggest you not to keep the previous <code>.git/*</code> files, and start from scratch. To do this, you can simple delete the <code>.git/</code> folder as follows (provided you are already on the correct path)</li>
+</ol>
+<pre class="bash"><code>rm -rf .git</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>To use it as your main page, it is <strong>crucial</strong> to create a GitHub repository named <code>username.github.io</code>, such that the <code>username</code> is replaced by the appropriate value.</li>
+<li>After doing this, you can follow all the previously mentioned steps. That is, once in the correct folder,</li>
+</ol>
+<pre class="bash"><code>git init
+git add .
+git commit -m &#39;initial commit&#39;
+git remote add origin https://github.com/user/user.github.io.git
+git branch -M main (Optional!)
+git remote set-url origin git@github.com:user/user.github.io.git
+git push -u origin main</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>(<strong>Optional</strong>). As in <a href="https://stackoverflow.com/questions/11577147/how-to-fix-http-404-on-github-pages">this thread</a>, if you are facing a <code>HTTP 404</code> on GitHub Pages when everything looks correct, you may have to push an empty commit to make it work. You can do this in the following way</li>
+</ol>
+<pre class="bash"><code>git commit --allow-empty -m &#39;Site rebuild&#39;
+git push -u origin main</code></pre>
 </div>
 
 
