@@ -459,7 +459,7 @@ git branch -M main
 git push -u origin main</code></pre>
 <p>However, there are a few important comments to be made.</p>
 <ol style="list-style-type: decimal">
-<li>In the first line, notice that <code>user</code> and <code>repository</code> have to be replaced by the appropriate values.</li>
+<li>In the first line, notice that <code>user</code> and <code>repository</code> have to be replaced by the appropriate values. Also, after setting an SSH key, we will see how to rewrite the first line in the correct way</li>
 <li>Recently, the default name of the main branch was modified from <code>master</code> to <code>main</code>, as in the second line. You can use the <code>git branch</code> command to verify the current name. Also, the second line may not be necessary if you already redefine your standard main branch name.</li>
 <li>Using the <code>git push</code> command right away will likely lead to an error due to authentication issues. We will fix it now.</li>
 </ol>
@@ -497,8 +497,10 @@ git push -u origin main</code></pre>
 <pre class="bash"><code>pbcopy &lt; ~/.ssh/id_ed25519.pub</code></pre>
 <p>Now, on your GitHub profile, go to <code>Settings</code> → <code>SSH and GPC keys</code> and click on the <code>New SSH key</code> button.</p>
 <p>On the new <code>SSH keys / Add new</code> page, paste your SSH public key into the <code>Key</code> field, and click on the <code>Add SSH key</code> button.</p>
-<p>As a final comment, and as discussed in <a href="https://gist.github.com/developius/c81f021eb5c5916013dc">this thread</a>, if you try to use the <code>git push -u origin main</code> command and it still does not work, you may have to run the following line</p>
+<p>As a final comment, and as discussed in <a href="https://gist.github.com/developius/c81f021eb5c5916013dc">this thread</a>, if you try to use the <code>git push -u origin main</code> command and it still does not work (recall that we are using the SSH protocol, as opposed to the HTTPS protocol), you may have to run the following line</p>
 <pre class="bash"><code>git remote set-url origin git@github.com:user/repository.git</code></pre>
+<p>Then, you can push your files to GitHub.</p>
+<pre class="bash"><code>git push -u origin main</code></pre>
 <div class="space">
 
 </div>
@@ -560,10 +562,12 @@ git push origin main</code></pre>
 <pre class="bash"><code>git init
 git add .
 git commit -m &#39;initial commit&#39;
-git remote add origin https://github.com/user/user.github.io.git
+git remote add origin git@github.com:user/user.github.io.git
 git branch -M main (Optional!)
-git remote set-url origin git@github.com:user/user.github.io.git
 git push -u origin main</code></pre>
+<p>Here, notice that the line 4 is slightly different than before. Now, we are using the SSH protocol. As a replacement for line 4, we could have used, as we did earlier</p>
+<pre class="bash"><code>git remote add origin https://github.com/user/user.github.io.git
+git remote set-url origin git@github.com:user/user.github.io.git</code></pre>
 <ol start="6" style="list-style-type: decimal">
 <li>(<strong>Optional</strong>). As in <a href="https://stackoverflow.com/questions/11577147/how-to-fix-http-404-on-github-pages">this thread</a>, if you are facing a <code>HTTP 404</code> on GitHub Pages when everything looks correct, you may have to push an empty commit to make it work. You can do this in the following way</li>
 </ol>
@@ -575,6 +579,81 @@ git push -u origin main</code></pre>
 </div>
 <div id="rstudio-git-github" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> RStudio + Git &amp; GitHub</h1>
+<p>The “RStudio + Git &amp; GitHub” integration is simple once you know all the previous steps. However, in this case, when creating a new project, we will do it a different order (although many other options are possible); that is, we will</p>
+<ol style="list-style-type: decimal">
+<li>First, create a GitHub repository.</li>
+<li>Second, create a local RStudio project that will be linked to this GitHub repository.</li>
+</ol>
+<div class="space">
+
+</div>
+<div id="creating-a-github-repository" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Creating a GitHub repository</h2>
+<p>As showed before, <a href="https://github.com/new">create a new repository <strong>on Github</strong></a>. After selecting the SSH protocol, copy your repository address. It will look like</p>
+<pre class="bash"><code>git@github.com:username/repository.git</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="linking-your-repository-to-rstudio" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Linking your repository to RStudio</h2>
+<p>Firstly, let’s make sure that RStudio can identify the Git installation (this is automatically done in most cases). To do this, go to <code>Tools</code> → <code>Global Options</code> → <code>Git/SVN</code> and check if the <code>Git executable</code> has the appropriate Git path; if not, <a href="https://support.rstudio.com/hc/en-us/articles/200532077?version=1.4.1717&amp;mode=desktop">this page</a> may help.</p>
+<p>Your settings have to be similar to those shown in the following image. Also, even if you have set your SSH key before, it will not appear in the <code>SSH RSA key</code> field. No worries, <a href="https://happygitwithr.com/ssh-keys.html#from-rstudio">here</a> is an explanation of why this may happen.</p>
+<div class="space">
+
+</div>
+<p><img src="images/RStudiosettings.png" /></p>
+<div class="space">
+
+</div>
+<p>In RStudio, go to <code>File</code> → <code>New Project</code> → <code>Version Control</code> → <code>Git</code>, and paste your repository address (from GitHub) on the <code>Repository URL</code> field. The <code>Project directory name</code> will be auto completed. You also have to set the <code>Create project as subdirectory of:</code> option accordingly.</p>
+<p>The below image shows you how the spaces should be filled. After doing it, click on the <code>Create Project</code> button.</p>
+<div class="space">
+
+</div>
+<p><img src="images/gitRStudio.png" /></p>
+<div class="space">
+
+</div>
+<p>Once you have created your project and linked it to the RStudio, a Git icon will appear on the top menu, as in the right side of this image.</p>
+<div class="space">
+
+</div>
+<p><img src="images/giticon.png" /></p>
+<div class="space">
+
+</div>
+<p>If you click on it, and go to the <code>Commit...</code> option (on macOS, you can use the <code>control + option + M</code> shortcut), you will see the following window.</p>
+<div class="space">
+
+</div>
+<p><img src="images/gitcommit.png" /></p>
+<div class="space">
+
+</div>
+<p>From the above image, notice that we can do everything we did manually before, namely, moving items to the <code>Staging area</code> (check the desired boxes under the <code>Staged</code> menu), committing changes, pushing our new files to GitHub (with the <code>Push</code> button on the top right), etc. Here, we can also see the modified files; in this example, a new line has been added to the <code>main.R</code> file.</p>
+<p>As a remark, when working with more people, it is a good practice to <code>Pull</code> changes from the GitHub repository into your local project before pushing your modified files. This prevents conflicts among versions.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="pushing-a-local-rstudio-project" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> Pushing a local RStudio project</h2>
+<p>Although I said it is more common to first create a GitHub repository and then link it to the RStudio, we can also do things in the opposite order. To do this, start by creating a new RStudio project, that is, go to <code>File</code> → <code>New Project</code> → <code>New Directory</code> → <code>New Project</code> and fill the <code>Directory name</code> field with your project name. <strong>Do not forget to check the <code>Create a git repository</code> box</strong>. And finally, click on the <code>Create Project</code> button.</p>
+<p>You will end up with a window that looks like the below image.</p>
+<div class="space">
+
+</div>
+<p><img src="images/newproject.png" /></p>
+<div class="space">
+
+</div>
+<p>However, after creating the project we still have to connect it to your GitHub repository. To do this, <a href="https://github.com/new">create a new repository <strong>on Github</strong></a> (as we have already done before), and copy your repository address (after selecting the SSH protocol). Again, it will look like</p>
+<pre class="bash"><code>git@github.com:username/repository.git</code></pre>
+<p>Then, it suffices to run the following command (to do this inside RStudio, you can open the terminal going to <code>Tools</code> → <code>Terminal</code> → <code>Move Focus to Terminal</code>; it must be already set to the project folder)</p>
+<pre class="bash"><code>git remote add origin git@github.com:user/user.github.io.git</code></pre>
+<p>From this point on, you can do the same procedures we did in the previous sections. However, at least in my machine (<code>macOS Big Sur</code> version <code>11.6.2</code>, running <code>RStudio</code> version <code>1.4.1717</code>) the <code>Pull</code> and <code>Push</code> buttons remained disabled until I did a first manual (using the terminal) <code>git push -u origin main</code>. This seems like a bug to me. If the same happens to you, do the first steps (moving files to the staging area, committing the changes, etc.) using the RStudio GUI, and execute the first <code>push</code> command on the terminal (as before).</p>
+</div>
 </div>
 
 
