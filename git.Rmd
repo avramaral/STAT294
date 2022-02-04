@@ -275,3 +275,6 @@ git push -u origin main
 git commit --allow-empty -m 'Site rebuild'
 git push -u origin main
 ```
+
+<div class = 'space'></div>
+# RStudio + Git & GitHub
