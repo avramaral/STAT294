@@ -136,4 +136,103 @@ If you want to visit older commits, use the `git checkout (commit key)` command.
 <div class = 'space'></div>
 ## Pushing files to GitHub
 
-To be completed.
+Assuming you already have a GitHub account (if not, you can click [here](https://github.com/) to create one), we can [create a new repository **on Github**](https://github.com/new).
+
+<div class = 'space'></div>
+
+![](images/new_repository.png)
+
+<div class = 'space'></div>
+
+Now, since we want to “push an existing repository from the command line” (for example, the repository we have just created in `/stat294/`), all we need to do is
+```{bash, eval = FALSE}
+git remote add origin https://github.com/user/repository.git
+git branch -M main 
+git push -u origin main
+```
+
+However, there are a few important comments to be made.
+
+1. In the first line, notice that `user` and `repository` have to be replaced by the appropriate values.
+2. Recently, the default name of the main branch was modified from `master` to `main`, as in the second line. You can use the `git branch` command to verify the current name. Also, the second line may not be necessary if you already redefine your standard main branch name.
+3. Using the `git push` command right away will likely lead to an error due to authentication issues. We will fix it now.
+
+<div class = 'space'></div>
+### SSH settings
+
+Since it is no longer possible to connect to GitHub using just your username and password, we have to set a SSH (Secure Shell, which is a cryptographic network protocol) key.
+
+To do this, based on [this guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent), do the following.
+
+1. On the terminal, enter the following command (replacing `email@email.com` by your email address).
+```{bash, eval = FALSE}
+ssh-keygen -t ed25519 -C 'email@email.com'
+```
+The above command will create a new SSH key using your email address as a label. As a remark, you can accept the default file location and create an empty password.
+2. Now, you will add your SSH key to the ssh-agent. To do this, use the following command
+```{bash, eval = FALSE}
+eval '$(ssh-agent -s)'
+```
+3. The next step is to modify your `~/.ssh/config` file to automatically load keys into the ssh-agent. This can be done by using the following command 
+```{bash, eval = FALSE}
+open ~/.ssh/config
+```
+However, if such a file does not exist, it may be necessary to create it with
+```{bash, eval = FALSE}
+touch ~/.ssh/config
+```
+Finally, after opening your `~/.ssh/config` file, you can modify it by pasting the following lines
+```{bash, eval = FALSE}
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+```
+4. Now you can add your SSH private key to the ssh-agent with
+```{bash, eval = FALSE}
+ssh-add -K ~/.ssh/id_ed25519
+```
+5. The final step is adding the newly created SSH key to your GitHub account. To do this, based on [this guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account), copy the SSH public key to your clipboard with the following command
+```{bash, eval = FALSE}
+pbcopy < ~/.ssh/id_ed25519.pub
+```
+Now, on your GitHub profile, go to `Settings` → `SSH and GPC keys` and click on the `New SSH key` button.
+
+On the new `SSH keys / Add new` page, paste your SSH public key into the `Key` field, and click on the `Add SSH key` button.
+
+As a final comment, and as discussed in [this thread](https://gist.github.com/developius/c81f021eb5c5916013dc), if you try to use the `git push -u origin main` command and it still does not work, you may have to run the following line
+```{bash, eval = FALSE}
+git remote set-url origin git@github.com:user/repository.git
+```
+
+<div class = 'space'></div>
+### Creating a README file
+
+Since we did not create a `README.md` file, we can do it now. On the terminal, assuming the correct directory,
+```{bash, eval = FALSE}
+touch README.md
+nano README.md
+```
+The second line allows you to edit the file using the `nano` text editor. Alternatively, you can use any other software to do this. Also, you can use the `markdown` language to format this document (the same as in `RMarkdown`).
+
+Next, let's do the necessary steps to push this new change to our GitHub repository; that is,
+```{bash, eval = FALSE}
+git add README.md
+git commit -m 'add readme file'
+git push origin main
+```
+
+After doing this, check you repository page on GitHub!
+
+<div class = 'space'></div>
+## Pulling files from another repository
+
+Now, suppose that you have to retrieve files from an existing repository. You can do this using the `clone` and `pull` commands. To do this, 
+
+1. On GitHub, navigate to the desired repository (e.g., [this one](#)), go to `Code` → `HTTPS`, and copy the address (e.g., `https://github.com/user/repository.git`).
+2. On the terminal, navigate to the desired folder using the `cd` command, and type
+```{bash, eval = FALSE}
+git clone https://github.com/user/repository.git
+```
+
+If the repository got updated and you want to incorporate these changes, you can use the `git pull` command. To check the linked remote repositories, you may use `git remote -v`; and if there are more than one, it may be necessary to specify it through the more complete (for example) `git pull origin` command. After getting a copy, **all other commands can be applied**.
