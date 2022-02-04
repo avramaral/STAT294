@@ -229,10 +229,10 @@ After doing this, check you repository page on GitHub!
 
 Now, suppose that you have to retrieve files from an existing repository. You can do this using the `clone` and `pull` commands. To do this, 
 
-1. On GitHub, navigate to the desired repository (e.g., [this one](#)), go to `Code` → `HTTPS`, and copy the address (e.g., `https://github.com/user/repository.git`).
+1. On GitHub, navigate to the desired repository (e.g., [this one](#)), go to `Code` → `SSH`, and copy the address (e.g., `git@github.com:username/repository.git`).
 2. On the terminal, navigate to the desired folder using the `cd` command, and type
 ```{bash, eval = FALSE}
-git clone https://github.com/user/repository.git
+git clone git@github.com:username/repository.git
 ```
 
 If the repository got updated and you want to incorporate these changes, you can use the `git pull` command. To check the linked remote repositories, you may use `git remote -v`; and if there are more than one, it may be necessary to specify it through the more complete (for example) `git pull origin` command. After getting a copy (of a repository that you own), **all other commands can be applied**.
@@ -250,9 +250,9 @@ Using the [GitHub Pages](https://pages.github.com/), it is possible to create a 
 
 To do this, take the following steps.
 
-1. Using the terminal, navigate to the desired folder, and clone [this repository](https://github.com/avramaral/blog_demo).
+1. Using the terminal, navigate to the desired folder, and clone [this repository](git@github.com:avramaral/blog_demo.git).
 ```{bash, eval = FALSE}
-https://github.com/avramaral/blog_demo.git
+git clone git@github.com:avramaral/blog_demo.git
 ```
 2. Modify the files in whatever way you want. Notice that this is a very simple static page with a single `.html` file. Much more complex static websites can be created. For instance, people use [Jekyll](https://jekyllrb.com/) as a static site generator. However, later in this course you will see how to create static web pages using `R` and `RStudio`. 
 3. (**Optional**). As you do not own this repository, and you are using the corresponding files just to initialize your project, I suggest you not to keep the previous `.git/*` files, and start from scratch. To do this, you can simple delete the `.git/` folder as follows (provided you are already on the correct path)
