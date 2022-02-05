@@ -368,3 +368,55 @@ git remote add origin git@github.com:user/user.github.io.git
 ```
 
 From this point on, you can do the same procedures we did in the previous sections. However, at least in my machine (`macOS Big Sur` version `11.6.2`, running `RStudio` version `1.4.1717`) the ``Pull`` and ``Push`` buttons remained disabled until I did a first manual (using the terminal) `git push -u origin main`. This seems like a bug to me. If the same happens to you, do the first steps (moving files to the staging area, committing the changes, etc.) using the RStudio GUI, and execute the first `push` command on the terminal (as before).
+
+<div class = 'space'></div>
+# Creating a page with R Markdown
+
+As you will see in details along the course, it is also possible to create a web page using `R Markdown` and host it on GitHub. In this case, you will usually have a page under the `https://username.github.io/repo_name/` domain. For instance, this page (yes, the this tutorial page) was created using `R Markdown` files.
+
+Without getting into too much details details, you will have to have (at least) the following files under your `R Project` (`.Rproj`).
+```{bash, eval = FALSE}
+RProject/
+  ├── my_project.Rproj
+  ├── _site.yml
+  └── index.Rmd
+```
+
+Your `site.yml` has to be set as follows (of course many other options can be set, and Professor Paula will go through them with you).
+```{bash, eval = FALSE}
+name: 'Page Name'
+output_dir: 'docs'
+navbar:
+  title: 'My website'
+  left:
+    - text: 'Home'
+      href: index.html
+```
+
+And once you have this minimal structure, you can go to the `Build` tab on RStudio, and click on `Build Website`. All other necessary files will be automatically created.
+
+However, since the main goal of this tutorial is learning how to use Git and GitHub in different scenarios, we will clone a project of this kind from [this repository](https://github.com/avramaral/rmd_demo). As we have seen in Section 5.2, we can link this repository to an RStudio project. All you need is the following link
+```{bash, eval = FALSE}
+git@github.com:avramaral/rmd_demo.git
+```
+
+However, as in Section 4, we are creating a project using files from another user's repository. In this case, it is not possible to inherit all previous `.git` settings. But instead of deleting the `.git` directory and start it from scratch (as we did in Section 4), we can use the following command
+```{bash, eval = FALSE}
+git remote remove origin
+```
+
+Here, we are removing the link between this project and its previous repository. Thus, after [creating a repository on GitHub](https://github.com/new), all we have to do is to link it again to our newly created repository; to do this, as before, you have to
+```{bash, eval = FALSE}
+git remote add origin git@github.com:user/user.github.io.git
+git push -u origin main
+```
+
+As a remark, notice that **the `git log` remains the same as before**; that is, the history of changes made by the previous project owner will **not** be deleted.
+
+Now, to make your website available online, on your repository page, go to `Settings` → `Pages` and, under the `Source` section, change the `Select branch` option from `None` to `main`, and **make sure to change the `Select folder` option from `/ (root)` to `/docs`**. After doing this (and waiting a few minutes), you can navigate to your page (under the `https://username.github.io/repo_name/` domain). The below image shows the final result.
+
+<div class = 'space'></div>
+
+![](images/final_rmd.png)
+
+<div class = 'space'></div>

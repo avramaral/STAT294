@@ -653,6 +653,43 @@ git push -u origin main</code></pre>
 <p>Then, it suffices to run the following command (to do this inside RStudio, you can open the terminal going to <code>Tools</code> → <code>Terminal</code> → <code>Move Focus to Terminal</code>; it must be already set to the project folder)</p>
 <pre class="bash"><code>git remote add origin git@github.com:user/user.github.io.git</code></pre>
 <p>From this point on, you can do the same procedures we did in the previous sections. However, at least in my machine (<code>macOS Big Sur</code> version <code>11.6.2</code>, running <code>RStudio</code> version <code>1.4.1717</code>) the <code>Pull</code> and <code>Push</code> buttons remained disabled until I did a first manual (using the terminal) <code>git push -u origin main</code>. This seems like a bug to me. If the same happens to you, do the first steps (moving files to the staging area, committing the changes, etc.) using the RStudio GUI, and execute the first <code>push</code> command on the terminal (as before).</p>
+<div class="space">
+
+</div>
+</div>
+</div>
+<div id="creating-a-page-with-r-markdown" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Creating a page with R Markdown</h1>
+<p>As you will see in details along the course, it is also possible to create a web page using <code>R Markdown</code> and host it on GitHub. In this case, you will usually have a page under the <code>https://username.github.io/repo_name/</code> domain. For instance, this page (yes, the this tutorial page) was created using <code>R Markdown</code> files.</p>
+<p>Without getting into too much details details, you will have to have (at least) the following files under your <code>R Project</code> (<code>.Rproj</code>).</p>
+<pre class="bash"><code>RProject/
+  ├── my_project.Rproj
+  ├── _site.yml
+  └── index.Rmd</code></pre>
+<p>Your <code>site.yml</code> has to be set as follows (of course many other options can be set, and Professor Paula will go through them with you).</p>
+<pre class="bash"><code>name: &#39;Page Name&#39;
+output_dir: &#39;docs&#39;
+navbar:
+  title: &#39;My website&#39;
+  left:
+    - text: &#39;Home&#39;
+      href: index.html</code></pre>
+<p>And once you have this minimal structure, you can go to the <code>Build</code> tab on RStudio, and click on <code>Build Website</code>. All other necessary files will be automatically created.</p>
+<p>However, since the main goal of this tutorial is learning how to use Git and GitHub in different scenarios, we will clone a project of this kind from <a href="https://github.com/avramaral/rmd_demo">this repository</a>. As we have seen in Section 5.2, we can link this repository to an RStudio project. All you need is the following link</p>
+<pre class="bash"><code>git@github.com:avramaral/rmd_demo.git</code></pre>
+<p>However, as in Section 4, we are creating a project using files from another user’s repository. In this case, it is not possible to inherit all previous <code>.git</code> settings. But instead of deleting the <code>.git</code> directory and start it from scratch (as we did in Section 4), we can use the following command</p>
+<pre class="bash"><code>git remote remove origin</code></pre>
+<p>Here, we are removing the link between this project and its previous repository. Thus, after <a href="https://github.com/new">creating a repository on GitHub</a>, all we have to do is to link it again to our newly created repository; to do this, as before, you have to</p>
+<pre class="bash"><code>git remote add origin git@github.com:user/user.github.io.git
+git push -u origin main</code></pre>
+<p>As a remark, notice that <strong>the <code>git log</code> remains the same as before</strong>; that is, the history of changes made by the previous project owner will <strong>not</strong> be deleted.</p>
+<p>Now, to make your website available online, on your repository page, go to <code>Settings</code> → <code>Pages</code> and, under the <code>Source</code> section, change the <code>Select branch</code> option from <code>None</code> to <code>main</code>, and <strong>make sure to change the <code>Select folder</code> option from <code>/ (root)</code> to <code>/docs</code></strong>. After doing this (and waiting a few minutes), you can navigate to your page (under the <code>https://username.github.io/repo_name/</code> domain). The below image shows the final result.</p>
+<div class="space">
+
+</div>
+<p><img src="images/final_rmd.png" /></p>
+<div class="space">
+
 </div>
 </div>
 
