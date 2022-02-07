@@ -13,6 +13,13 @@ output:
 **Git** is a *distributed version control system* software for tracking changes in any set of files, usually used for coordinating work among programmers collaboratively developing source code during software development. On the other hand, **GitHub** is a cloud platform for software development and *version control* using Git (adapted from [here](https://en.wikipedia.org/wiki/Git) and [here](https://en.wikipedia.org/wiki/GitHub)).
 
 <div class = 'space'></div>
+## Recording Tutorials
+
+Aiming to cover the material from this page, the following tutorials sessions were given:
+
+1. [Tutorial Session 01](https://kaust.zoom.us/rec/share/FIp4songDT17s6KFOwL2d5XLmCtWTqbGWRhLCcpWlByH0NzcY2e3OgxWRTgdobil.EcY8ANl8TDm2LYEx) (password: `=fVm!s&2`)
+
+<div class = 'space'></div>
 ## Preliminaries
 
 Firstly, as all students voted in `macOS` as their Operating System (OS) for this class, some instructions (in particular, Section 3.4.1) will be OS dependent. For a broader discussion on how to set SSH keys on other platforms, you may refer to [this tutorial](https://happygitwithr.com/ssh-keys.html).
