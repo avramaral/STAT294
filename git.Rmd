@@ -15,7 +15,7 @@ output:
 <div class = 'space'></div>
 ## Recording Tutorials
 
-Aiming to cover the material from this page, the following tutorials sessions were given:
+Aiming to cover the material from this page, the following tutorial sessions were given
 
 1. [Tutorial Session 01](https://kaust.zoom.us/rec/share/FIp4songDT17s6KFOwL2d5XLmCtWTqbGWRhLCcpWlByH0NzcY2e3OgxWRTgdobil.EcY8ANl8TDm2LYEx) (password: `=fVm!s&2`)
 
