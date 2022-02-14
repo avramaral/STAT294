@@ -17,7 +17,8 @@ output:
 
 Aiming to cover the material from this page, the following tutorial sessions were given
 
-1. [Tutorial Session 01](https://kaust.zoom.us/rec/share/FIp4songDT17s6KFOwL2d5XLmCtWTqbGWRhLCcpWlByH0NzcY2e3OgxWRTgdobil.EcY8ANl8TDm2LYEx) (password: `=fVm!s&2`)
+1. [Tutorial Session 01](https://kaust.zoom.us/rec/share/FIp4songDT17s6KFOwL2d5XLmCtWTqbGWRhLCcpWlByH0NzcY2e3OgxWRTgdobil.EcY8ANl8TDm2LYEx) (passcode: `=fVm!s&2`)
+2. [Tutorial Session 02](https://kaust.zoom.us/rec/share/347DwF-9OItMwzgrKzdDFomfFUBkNp1AzodU5imQdWEAJRjcP4roQonKvAGCEOC5.X_h0MezM-JkBwpxM?startTime=1644823843000) (passcode: `69!xcsuG`)
 
 <div class = 'space'></div>
 ## Preliminaries
