@@ -685,8 +685,9 @@ git push -u origin main</code></pre>
 </div>
 <p>However, after creating the project we still have to connect it to your GitHub repository. To do this, <a href="https://github.com/new">create a new repository <strong>on Github</strong></a> (as we have already done before), and copy your repository address (after selecting the SSH protocol). Again, it will look like</p>
 <pre class="bash"><code>git@github.com:username/repository.git</code></pre>
-<p>Then, it suffices to run the following command (to do this inside RStudio, you can open the terminal going to <code>Tools</code> → <code>Terminal</code> → <code>Move Focus to Terminal</code>; it must be already set to the project folder)</p>
-<pre class="bash"><code>git remote add origin git@github.com:user/user.github.io.git</code></pre>
+<p>Then, it suffices to run the following commands (to do this inside RStudio, you can open the terminal going to <code>Tools</code> → <code>Terminal</code> → <code>Move Focus to Terminal</code>; it must be already set to the project folder)</p>
+<pre class="bash"><code>git init
+git remote add origin git@github.com:user/user.github.io.git</code></pre>
 <p>From this point on, you can do the same procedures we did in the previous sections. However, at least in my machine (<code>macOS Big Sur</code> version <code>11.6.2</code>, running <code>RStudio</code> version <code>1.4.1717</code>) the <code>Pull</code> and <code>Push</code> buttons remained disabled until I did a first manual (using the terminal) <code>git push -u origin main</code>. This seems like a bug to me. If the same happens to you, do the first steps (moving files to the staging area, committing the changes, etc.) using the RStudio GUI, and execute the first <code>push</code> command on the terminal (as before).</p>
 <div class="space">
 

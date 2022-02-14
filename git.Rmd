@@ -393,8 +393,9 @@ However, after creating the project we still have to connect it to your GitHub r
 git@github.com:username/repository.git
 ```
 
-Then, it suffices to run the following command (to do this inside RStudio, you can open the terminal going to `Tools` → `Terminal` → `Move Focus to Terminal`; it must be already set to the project folder)
+Then, it suffices to run the following commands (to do this inside RStudio, you can open the terminal going to `Tools` → `Terminal` → `Move Focus to Terminal`; it must be already set to the project folder)
 ```{bash, eval = FALSE}
+git init
 git remote add origin git@github.com:user/user.github.io.git
 ```
 
