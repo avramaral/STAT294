@@ -7,6 +7,9 @@ navbar:
       href: index.html
     - text: 'Git and GitHub'
       href: git.html
+  right:
+    - icon: fa-globe
+      href: https://avramaral.github.io/
 output:
   html_document:
     css: style.css
