@@ -7,6 +7,8 @@ navbar:
       href: index.html
     - text: 'Git and GitHub'
       href: git.html
+    - text: 'R package'
+      href: rpack.html
   right:
     - icon: fa-globe
       href: https://avramaral.github.io/

@@ -1,0 +1,13 @@
+---
+title: 'Git and Github Tutorial Session'
+author: 'André Victor Ribeiro Amaral'
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+# Introduction
+
+In this section, we will create an `R` package ([`GPcov`](https://github.com/avramaral/GPcov/)) that compute the covariance function for Gaussian Processes with different dependence structures. Also, we will create a [website](https://avramaral.github.io/GPcov/) for our package using `pkgdown`.
