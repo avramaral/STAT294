@@ -1,5 +1,5 @@
 ---
-title: 'Git and Github Tutorial Session'
+title: 'GPcov: Creating an R package'
 author: 'André Victor Ribeiro Amaral'
 output:
   html_document:
