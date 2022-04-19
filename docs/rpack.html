@@ -14,8 +14,8 @@
 
 <title>GPcov: Creating an R package</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,7 +63,6 @@ if (window.hljs) {
 
 
 
-
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 
@@ -88,9 +87,6 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
 }
 pre code {
   padding: 0;
@@ -316,7 +312,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -358,8 +354,337 @@ div.tocify {
 
 
 <div id="introduction" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Introduction</h1>
-<p>In this section, we will create an <code>R</code> package (<a href="https://github.com/avramaral/GPcov/"><code>GPcov</code></a>) that compute the covariance function for Gaussian Processes with different dependence structures. Also, we will create a <a href="https://avramaral.github.io/GPcov/">website</a> for our package using <code>pkgdown</code>.</p>
+<h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>In this tutorial, we will create an <code>R</code> package (<a href="https://github.com/avramaral/GPcov/"><code>GPcov</code></a>) that computes the covariance matrix for Gaussian Processes with different dependence structures. Also, we will create a <a href="https://avramaral.github.io/GPcov/">website</a> for our package using <code>pkgdown</code>. The image below shows an screenshot of our <a href="https://avramaral.github.io/GPcov/">packages’ website</a></p>
+<div class="space">
+
+</div>
+<p><img src="images/GPcov_ss.png" /></p>
+<div class="space">
+
+</div>
+<p>As a reference, for this tutorial, besides <a href="https://www.paulamoraga.com/book-r/10-r-packages.html">Professor Paula’s notes</a>, I mostly used the <a href="https://r-pkgs.org/"><code>R Packages</code> book</a>, which is <a href="https://r-pkgs.org/">freely available online</a>.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="creating-a-package-project" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> Creating a package project</h1>
+<p>To create the <code>R</code> package, we will use different tools (e.g., <code>roxygen2</code> for documentation); however, most of the desired functionalities are encapsulated into two packages, namely <code>usethis</code> and <code>devtools</code>. We only need to load <code>devtools</code>, though (since it calls <code>usethis</code> internally). If you do not have them installed, do it and load <code>devtools</code>.</p>
+<pre class="r"><code>install.packages(c(&quot;devtools&quot;, &quot;roxygen2&quot;))
+
+library(&quot;devtools&quot;)</code></pre>
+<p>The first step will be creating a project for our <code>R</code> package. We can do this with</p>
+<pre class="r"><code>usethis::create_package(path = &#39;~/Desktop/Project/GPcov&#39;) # Change the path!</code></pre>
+<p>Since a new <code>R</code> session has been initialized, you have to load the <code>devtools</code> library again.</p>
+<pre class="r"><code>library(&quot;devtools&quot;)</code></pre>
+<p>Now, recalling that we want to have our project on GitHub (so people can use it), we will set a new Git repository and do an initial commit. This can be done using the following command</p>
+<pre class="r"><code>usethis::use_git(message = &#39;initial commit&#39;)</code></pre>
+<p>If you are using RStudio and have to restart <code>R</code>, notice that we need to load <code>devtools</code> again.</p>
+<pre class="r"><code>library(&quot;devtools&quot;)</code></pre>
+<p>At this point, we have the following file structure</p>
+<pre class="bash"><code>GPcov/
+├── .gitignore
+├── .Rbuildignore
+├── .Rhistory
+├── DESCRIPTION
+├── NAMESPACE
+├── GPcov.Rproj
+└── R/
+    └── ..</code></pre>
+<p>Now, we can start modifying the files.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="initial-settings" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> Initial settings</h1>
+<p>The first file we will change is <code>DESCRIPTION</code>. Here, we would like to describe our package’s functionalities, so that other people may have a rough idea on how it works. For <code>GPcov</code>, I edited it in the following way (change it as per your convenience)</p>
+<pre class="bash"><code>Package: GPcov
+Title: Compute covariance matrix for Gaussian processes
+Version: 0.0.1.0
+Authors@R:
+  person(&quot;André&quot;, &quot;Amaral&quot;, , &quot;avramaral@gmail.com&quot;, role = c(&quot;aut&quot;, &quot;cre&quot;))
+Description: This package provides functions to create a covariance matrix for Gaussian processes with different dependence structures.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2</code></pre>
+<p>After changing the <code>DESCRIPTION</code> file, let’s try to check if our (empty) package is being correctly defined. To do this, we can use the following command</p>
+<pre class="r"><code>devtools::check()</code></pre>
+<p>The (truncated) output was</p>
+<pre class="bash"><code>&gt; checking DESCRIPTION meta-information ... WARNING
+  Non-standard license specification:
+    `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+  Standardizable: FALSE
+
+0 errors ✓ | 1 warning x | 0 notes ✓</code></pre>
+<p>The above function, as the name suggests, check if there is any problem with our package code. And notice that we had a warning since we did not set a <code>License</code> for our project. Many options are available, but one alternative is running the following command</p>
+<pre class="r"><code>usethis::use_mit_license()</code></pre>
+<p>Now, we can check our package code again. We expect no errors.</p>
+<pre class="r"><code>devtools::check()</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="writing-our-r-code" class="section level1" number="4">
+<h1 number="4"><span class="header-section-number">4</span> Writing our <code>R</code> code</h1>
+<p>Our <code>R</code> code is very simple (see below), and the main function is <code>compute_cov_matrix()</code>. During the tutorial, I will briefly go through it. However, our main goal will not be discussing the code itself, but creating an <code>R</code> package based on it.</p>
+<pre class="r"><code>library(&quot;GPBayes&quot;)
+
+compute_distance &lt;- function (p, q) {
+  dim_p &lt;- length(p)
+  dim_q &lt;- length(q)
+  
+  if (dim_p != dim_q) {
+    stop(&quot;Points should have the same dimension.&quot;)
+  } else {
+    partial &lt;- 0
+    for (i in 1:dim_p) {
+      partial &lt;- partial + ((p[i] - q[i]) ^ 2)
+    }
+  }
+  sqrt(partial)
+}
+
+white_noise &lt;- function (p, q, sig2, a) {
+  if (sum(p != q) == 0) {
+    result &lt;- sig2
+  } else {
+    result &lt;- 0
+  }
+  result
+}
+
+brownian_motion &lt;- function (p, q) {
+  if (length(p) != 1) {
+    stop(&quot;Brownian motion covariance function can only be computed for &#39;d = 1&#39;.&quot;)
+  } else {
+    result &lt;- min(p, q)
+  }
+  result
+}
+
+exponential &lt;- function (p, q, sig2, beta) {
+  if (is.null(beta)) { beta &lt;- 1 }
+  (sig2 * exp(-1 * compute_distance(p, q) / beta))
+}
+
+matern_model &lt;- function (p, q, sig2, nu, beta) {
+  if (is.null(nu)) { nu &lt;- 1 } # Whittle covariance function
+  if (is.null(beta)) { beta  &lt;- 1 }
+  dist &lt;- compute_distance(p, q)
+  if (sum(p != q) == 0) {
+    result &lt;- sig2
+  } else {
+    result &lt;- ((sig2 / ((2 ^ (nu - 1)) * gamma(nu))) * ((dist/ beta) ^ nu) * GPBayes::BesselK(nu = nu, z = (dist / beta)))
+  }
+  result
+}
+
+compute_cov_function &lt;- function (p, q, cov_func = &quot;white_noise&quot;, arg) {
+  if (is.null(arg[[&quot;sig2&quot;]])) { sig2 &lt;- 1 } else { sig2 &lt;- arg[[&quot;sig2&quot;]] }
+  switch(EXPR = cov_func,
+         white_noise = {
+           cov_element &lt;- white_noise(p = p, q = q, sig2 = sig2)
+         }, brownian_motion = {
+           cov_element &lt;- brownian_motion(p = p, q = q)
+         }, exponential = {
+           cov_element &lt;- exponential(p = p, q = q, sig2 = sig2, beta = arg[[&quot;beta&quot;]])
+         }, matern = {
+           cov_element &lt;- matern_model(p = p, q = q, sig2 = sig2, nu = arg[[&quot;nu&quot;]], beta = arg[[&quot;beta&quot;]])
+         }, {
+           stop(&quot;Select a valid covariance model.&quot;)
+         })
+  cov_element
+}
+
+compute_cov_matrix &lt;- function (points, cov_func, ...) {
+  arg &lt;- list(...)
+  
+  if (!is.data.frame(points)) {
+    stop(&quot;&#39;points&#39; should be a data frame with &#39;n&#39; rows and &#39;d&#39; columns.&quot;)
+  } else {
+    n &lt;- nrow(points)
+    
+    cov_matrix &lt;- matrix(data = NA, nrow = n, ncol = n)
+    for (i in 1:n) {
+      for (j in i:n) {
+        cov_matrix[i, j] &lt;- compute_cov_function(p = unlist(as.vector(points[i, ])), q = unlist(points[j, ]), cov_func = cov_func, arg = arg)
+        cov_matrix[j, i] &lt;- cov_matrix[i, j]
+      }
+    }
+  }
+  cov_matrix
+}</code></pre>
+<p>Based on the above code, we will create the <code>.R</code> files so that we can write (copy/paste) our functions into the package project. To do this, we will use the <code>usethis::use_r()</code> function. Create the following files</p>
+<pre class="r"><code>usethis::use_r(name = &quot;compute_cov_matrix&quot;)
+usethis::use_r(name = &quot;compute_cov_function&quot;)
+usethis::use_r(name = &quot;utils&quot;)
+usethis::use_r(name = &quot;cov_models&quot;)</code></pre>
+<p>We will place the functions into the files as follows</p>
+<pre class="r"><code># FILE = compute_cov_matrix.R
+
+compute_cov_matrix &lt;- function (points, cov_func, ...) {
+  # CONTENT
+}</code></pre>
+<pre class="r"><code># FILE = compute_cov_function.R
+
+compute_cov_function &lt;- function (p, q, cov_func = &quot;white_noise&quot;, arg) {
+  # CONTENT
+}</code></pre>
+<pre class="r"><code># FILE = utils.R
+
+compute_distance &lt;- function (p, q) {
+  # CONTENT
+}</code></pre>
+<pre class="r"><code># FILE = cov_models.R
+
+white_noise &lt;- function (p, q, sig2, a) {
+  # CONTENT
+}
+
+brownian_motion &lt;- function (p, q) {
+  # CONTENT
+}
+
+exponential &lt;- function (p, q, sig2, beta) {
+  # CONTENT
+}
+
+matern_model &lt;- function (p, q, sig2, nu, beta) {
+  # CONTENT
+}</code></pre>
+<p>Notice that we did not have to load the <code>GPBayes</code> library into the <code>.R</code> files (using <code>library(GPBayes)</code>); however, for all functions imported from other packages, we have to make sure that we are also specifying their namespace, i.e., we have write <code>package::function()</code> when calling them (as we did with <code>GPBayes::BesselK()</code>).</p>
+<p>Now, we can check our code.</p>
+<pre class="r"><code>devtools::check()</code></pre>
+<p><strong>Remark:</strong> if we hadn’t written <code>GPBayes::BesselK()</code> when calling <code>BesselK()</code>, we would have seen a <code>note</code>:</p>
+<pre class="bash"><code>&gt; checking R code for possible problems ... NOTE
+  matern_model: no visible global function definition for ‘BesselK’
+  Undefined global functions or variables:
+    BesselK
+
+0 errors ✓ | 0 warnings ✓ | 1 note x</code></pre>
+<p>However, we still have a problem (in particular, a <code>warning</code>). As in the below output from the <code>check()</code> command, we did not declare the <code>GPBayes</code> package.</p>
+<pre class="bash"><code>&gt; checking dependencies in R code ... WARNING
+  &#39;::&#39; or &#39;:::&#39; import not declared from: ‘GPBayes’
+
+0 errors ✓ | 1 warning x | 0 notes ✓</code></pre>
+<p>To overcome this issue, we can use the <code>use_package()</code> function.</p>
+<pre class="r"><code>usethis::use_package(package = &quot;GPBayes&quot;)</code></pre>
+<p>The above command updated the <code>DESCRIPTION</code> file to account for the <code>GPBayes</code> package in the <code>Imports</code> section. <strong>Check it!</strong></p>
+<p>Finally, we can <code>check()</code> our code again. We expect no errors.</p>
+<pre class="r"><code>devtools::check()</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="playing-with-gpcov" class="section level1" number="5">
+<h1 number="5"><span class="header-section-number">5</span> Playing with <code>GPcov</code></h1>
+<p>Since we already have a minimum viable product, we can test our <code>GPcov</code> package. To do this, we can use the following command</p>
+<pre class="r"><code>devtools::load_all()
+# After documenting all necessary functions, we can load only the exported functions.
+# To do so, we can run 
+# devtools::load_all(export_all = FALSE)</code></pre>
+<p>Now, we have access to all coded methods as if the package was installed in our machine. However, as noted in the <a href="https://r-pkgs.org/"><code>R Packages</code> book</a>, the corresponding functions do not exist in the global environment. Read <a href="https://r-pkgs.org/whole-game.html#whole-game-load-all">this section</a> for more details. In particular, the following command should return <code>FALSE</code>.</p>
+<pre class="r"><code>exists(&quot;compute_cov_matrix&quot;, where = globalenv(), inherits = FALSE)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>As the package is being simulated as it was installed and loaded, we can compute a covariance matrix using the <code>compute_cov_matrix()</code> function. Also, using the <code>mvrnorm()</code> function (from the <code>MASS</code> package), we can simulate from the corresponding (zero-mean) Gaussian process.</p>
+<pre class="r"><code>x &lt;- data.frame(seq(from = 1, to = 300, by = 1))
+C &lt;- compute_cov_matrix(points = x, cov_func = &#39;matern_model&#39;, nu = 5, beta = 5)
+print(dim(C))</code></pre>
+<pre><code>## [1] 300 300</code></pre>
+<pre class="r"><code>C[1:5, 1:5]</code></pre>
+<pre><code>##           [,1]      [,2]      [,3]      [,4]      [,5]
+## [1,] 1.0000000 0.9975042 0.9900662 0.9778325 0.9610392
+## [2,] 0.9975042 1.0000000 0.9975042 0.9900662 0.9778325
+## [3,] 0.9900662 0.9975042 1.0000000 0.9975042 0.9900662
+## [4,] 0.9778325 0.9900662 0.9975042 1.0000000 0.9975042
+## [5,] 0.9610392 0.9778325 0.9900662 0.9975042 1.0000000</code></pre>
+<pre class="r"><code>library(MASS)
+
+set.seed(1)
+
+GP &lt;- mvrnorm(n = 5, mu = rep(0, nrow(C)), Sigma = as.matrix(C))
+plot(GP[1, ], type = &#39;l&#39;, ylim = c(min(GP), max(GP)), xlab = &#39;x&#39;, ylab = &#39;y&#39;)
+for (i in 2:nrow(GP)) {
+  lines(GP[i, ], col = i)
+}</code></pre>
+<p><img src="rpack_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<div class="space">
+
+</div>
+</div>
+<div id="documentation" class="section level1" number="6">
+<h1 number="6"><span class="header-section-number">6</span> Documentation</h1>
+<p>To make our functions more user-friendly, it is important to document our code. For example, if we run <code>?compute_cov_matrix</code> now, nothing will happen; however, we would like to change it, so that users can understand how the methods work.</p>
+<p>Since the <code>compute_cov_matrix()</code> is the only function the users should have access to (other functions are only supposed to be internally used), that is the only one we will document and export. To do this, on the <code>compute_cov_matrix.R</code> file, update your code in the following way</p>
+<pre class="r"><code>#&#39; Compute covariance matrix for a Gaussian process
+#&#39;
+#&#39; @param points A data frame with `n` rows and `d` columns.
+#&#39; @param cov_func A covariance model. Options are `white_noise`, `brownian_motion`, `exponential`, and `matern_model`. For all functions, one can provide `sig2`.
+#&#39; Also, for the `exponential` model, one has to provide the parameter `beta`, and for the `matern_model` model, the parameters `nu` and `beta`.
+#&#39; See \url{https://avramaral.github.io/STAT294/rpack.html} for more details.
+#&#39; @param ... Additional parameters. See above.
+#&#39;
+#&#39; @return An `n` by `n` covariance matrix.
+#&#39; @export
+#&#39;
+#&#39; @examples
+#&#39; x &lt;- seq(1, 10, 1)
+#&#39; y &lt;- seq(1, 10, 1)
+#&#39; z &lt;- expand.grid(x, y)
+#&#39; compute_cov_matrix(points = z, cov_func = &quot;matern_model&quot;, sig2 = 1, nu = 1, beta = 10)
+compute_cov_function &lt;- function (p, q, cov_func = &quot;white_noise&quot;, arg) {
+  # CONTENT
+}</code></pre>
+<p>From the above code, notice that we have to define the parameters (<code>@param</code>), the function return (<code>@return</code>), and we may also give an example (<code>examples</code>) of how to use it. Also (this part is <strong>super important</strong>) we have to export (<code>@export</code>) the function, so that it can be accessed by the users once the package is installed.</p>
+<p>We will also document the package itself. To do this, create an <code>.R</code> file named <code>GPcov</code></p>
+<pre class="r"><code>usethis::use_r(name = &quot;GPcov&quot;)</code></pre>
+<p>On this file, include the following code</p>
+<pre class="r"><code>#&#39; GPcov: A package for computing the covariance matrix for Gaussian processes
+#&#39;
+#&#39; The `GPcov` package provides one important function, namely, `compute_cov_matrix()`.
+#&#39;
+#&#39; @section `GPcov` functions:
+#&#39; The `compute_cov_matrix()` function computes the covariance matrix for a given model.
+#&#39;
+#&#39; @docType package
+#&#39; @name GPcov
+#&#39;
+#&#39; @import GPBayes
+NULL</code></pre>
+<p>From the above code, most parts are easy to follow. I just want to call your attention to the <code>@import</code> command (in particular, <code>@import GPBayes</code>). When creating the documentation, this command will include the <code>GPBayes</code> as a pre-requisite package in the <code>NAMESPACE</code> file (which is what we want).</p>
+<p>Finally, to create the documentation, run the following function</p>
+<pre class="r"><code>devtools::document()</code></pre>
+<p>Now, we have a new folder (<code>man</code>) with all documentation files (with <code>.Rd</code> extension). Also, the <code>NAMESPACE</code> file has been updated. <strong>Check it!</strong></p>
+<div class="space">
+
+</div>
+</div>
+<div id="unit-testing" class="section level1" number="7">
+<h1 number="7"><span class="header-section-number">7</span> Unit testing</h1>
+<div class="space">
+
+</div>
+</div>
+<div id="installing-gpcov" class="section level1" number="8">
+<h1 number="8"><span class="header-section-number">8</span> Installing <code>GPcov</code></h1>
+<div class="space">
+
+</div>
+</div>
+<div id="readme-file-and-github" class="section level1" number="9">
+<h1 number="9"><span class="header-section-number">9</span> README file and GitHub</h1>
+<p>MENTION HOW TO INSTALL IT FROM GITHUB.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="gpcov-website-with-pkgdown" class="section level1" number="10">
+<h1 number="10"><span class="header-section-number">10</span> <code>GPcov</code> website with <code>pkgdown</code></h1>
 </div>
 
 
