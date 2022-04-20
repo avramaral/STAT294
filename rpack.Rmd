@@ -64,7 +64,7 @@ GPcov/
 ├── NAMESPACE
 ├── GPcov.Rproj
 └── R/
-    └── ..
+    └── .
 ```
 
 Now, we can start modifying the files.
@@ -413,17 +413,204 @@ Now, we have a new folder (`man`) with all documentation files (with `.Rd` exten
 
 # Unit testing
 
+Now, we will focus on an import part of any software development, namely **unit testing**. The idea is have reproducible tests that guarantee that our functions have the expect behavior under different scenarios. For a deeper discussion on "Why should I write unit tests?", check [this book chapter](https://r-pkgs.org/tests.html#tests).
+
+For our package, we will only write tests for the `compute_cov_matrix()` function. But of course you can extent them to other methods too. To create a test file, we can use the following command
+```{r, eval = FALSE}
+usethis::use_test(name = "compute_cov_matrix")
+```
+The above command will create the following folders and files `tests/testthat/`, `tests/testthat.R`, `tests/testthat/test-compute_cov_matrix.R`. Also, it will update the `DESCRIPTION` file.
+
+In the **`tests/testthat/test-compute_cov_matrix.R`** file, we can write our unit tests.
+```{r, eval = FALSE}
+test_that("verify if the computed covariance matrix is semi-positive-definite", {
+  z <- data.frame(seq(from = 1, to = 10, by = 1))
+  expect_equal(matrixcalc::is.positive.semi.definite(x = compute_cov_matrix(points = z, cov_func = "white_noise")), TRUE)
+  expect_equal(matrixcalc::is.positive.semi.definite(x = compute_cov_matrix(points = z, cov_func = "brownian_motion")), TRUE)
+  expect_equal(matrixcalc::is.positive.semi.definite(x = compute_cov_matrix(points = z, cov_func = "exponential")), TRUE)
+  expect_equal(matrixcalc::is.positive.semi.definite(x = compute_cov_matrix(points = z, cov_func = "matern_model")), TRUE)
+})
+```
+Notice that we are using the `expect_that()` method from the `testthat` package to make sure that our computed covariance matrix is positive-semi-definite (as it has to be). 
+
+To run the tests, we can both select and run the code locally, or
+```{r, eval = FALSE}
+devtools::test()
+```
+
+However, to do this, make sure to include the `matrixcalc` package in the `Suggests` first.
+```{r, eval = FALSE}
+usethis::use_package(package = "matrixcalc", type = "Suggests")
+```
+
+After doing that, this is the expected outcome
+```{bash, eval = FALSE}
+ℹ Loading newGP
+ℹ Testing newGP
+✓ |  OK F W S | Context
+✓ |   4       | compute_cov_matrix                                                    
+
+══ Results ═════════════════════════════════════════════════════════
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 4 ]
+```
+
+The unit tests will also be checked if we `check()` our project
+```{r, eval = FALSE}
+devtools::check()
+```
+
 <div class = 'space'></div>
 
-# Installing `GPcov`
+# Installing `GPcov` locally
+
+Once we have a well-structured package, we can install it locally using the following command
+```{r, eval = FALSE}
+devtools::install(build_vignettes = TRUE)
+```
+The `build_vignettes` argument is optional, but we will write a vignette latter, and it will be good have it available too.
+
+Once it is installed, you can open another `R` session and try to load and play with `GPcov`.
+```{r, eval = FALSE}
+library(GPcov)
+
+# CODE
+```
+
+**Try it!** For instance, you access the package documentation by typing `?GPcov` and `?compute_cov_matrix`.
 
 <div class = 'space'></div>
 
-# README file and GitHub
+# `README` file and GitHub
 
-MENTION HOW TO INSTALL IT FROM GITHUB.
+Assuming we want to share our package with the world, the easiest way to do this is publishing it on GitHub (for instructions on how to submit your package to [CRAN](https://cran.r-project.org/), see [this book chapter](https://r-pkgs.org/release.html#release)). But first, let's create a `README` file for our project.
+
+A `README` file is especially important when our project is hosted in a GitHub repository, since it will give users an overview of the package's functionalities. It will also be used `pkgdown` when creating a website.
+
+To do this, we can use the following command
+```{r, eval = FALSE}
+usethis::use_readme_rmd()
+```
+
+Notice that a `README.Rmd` file has been created, and we can edit it as we want. Make sure to describe well how your package works, so that users can have an idea if they should install your project. For the purposes of this tutorial, you can copy the content from [this snippet](https://github.com/avramaral/GPcov/blob/main/README.Rmd).
+
+However, notice that this is a `.Rmd` file. Instead, we need a `.Rm` file. To create the `README.Rm` file, you can do as follows
+```{r, eval = FALSE}
+devtools::build_readme()
+```
+
+<div class = 'space'></div>
+
+Now, let's check our project.
+```{r, eval = FALSE}
+devtools::check()
+```
+
+## Pushing `GPcov` to GitHub
+
+Assuming everything is working with no errors, we can push our project to GitHub. To do this, you can follow [this tutorial](git.html). In particular, after setting your credentials, creating a new repository on Github, and linking it to your local project, you can use
+```{bash, eval = FALSE}
+git add .
+git commit -m 'full package'
+git push
+```
+
+<div class = 'space'></div>
+
+# Creating a Vignette
+
+A vignette can be used as a small example of how to use your package. To create one, we can do as follows
+```{r, eval = FALSE}
+usethis::use_vignette(name = "introduction", title = "Introduction to GPcov")
+```
+From the command, notice that a few folders and files have been created. However, we are interested in editing `vignettes/introduction.Rmd`. As for the `README` file, you can write it as you want; however, for this tutorial you can copy the content from [this snippet](https://github.com/avramaral/GPcov/blob/main/vignettes/introduction.Rmd).
+
+Also, since we are using other packages to run the vignettes, we have to include them in the `Suggests` section. In particular, we have to
+```{r, eval = FALSE}
+usethis::use_package(package = "knitr")
+usethis::use_package(package = "rmarkdown")
+usethis::use_package(package = "pheatmap")
+usethis::use_package(package = "MASS")
+```
+
+After doing this, you can build the vignettes (`build_vignettes()`) and build the package (`devtools::buil()`).
+```{r, eval = FALSE}
+devtools::build_vignettes()
+devtools::build()
+```
+
+Now, `check()` our code.
+```{r, eval = FALSE}
+devtools::check()
+```
+
+Personally, I had problems with `check()` after including the vignettes first time I tried. To overcome these issues, I had to update `knitr` and `rmarkdown`.
+```{r, eval = FALSE}
+install.packages(c("knitr", "rmarkdown"))
+```
+
+Then, after checking it again (`check()`) I had no other errors.
+
+---
+
+As we updated our project, we would like to have these changes being reflected on our GitHub repository. Therefore,
+```{bash, eval = FALSE}
+git add .
+git commit -m 'add vignette'
+git push
+```
 
 <div class = 'space'></div>
 
 # `GPcov` website with `pkgdown`
 
+To create a package website, we will use [`pkgdown`](https://pkgdown.r-lib.org/). Thus, the first thing we have to do is installing and loading the package.
+```{r, eval = FALSE}
+install.packages("pkgdown")
+library("pkgdown")
+```
+
+Once we have it installed, the first step is to configure `GPcov` to use `pkgdown`. This can be done as follows
+```{r, eval = FALSE}
+usethis::use_pkgdown()
+```
+Notice that a few folders and files have been created. For now, it suffices to change `_pkgdown.yml`. After opening it, write the following lines of code
+```{bash, eval = FALSE}
+url: https://username.github.io/repositoryname
+lang: en
+```
+where `username` and `repositoryname` has to be replaced to the appropriate values. In my case, `avramaral` and `GPcov`, respectively.
+
+Now, we have to build the website
+```{r, eval = FALSE}
+pkgdown::build_site()
+```
+
+Although the website is already fully working now, you can change it more. To see how to do this, refer to [this vignette](https://pkgdown.r-lib.org/articles/pkgdown.html).
+
+---
+
+After following all these steps, a few files and folders were automatically included in the `.gitignore` file (when they should **not** have been included). In this way, make sure to **remove** the following lines (if any) from your `.gitignore` file before doing the commit.
+```{bash, eval = FALSE}
+docs
+inst/doc
+/doc/
+/Meta/
+```
+
+Finally, we can commit the changes and push them to our Github repository.
+```{bash, eval = FALSE}
+git add .
+git commit -m 'add website'
+git push
+```
+
+As a last step, set the GitHub page as we [learned here](git.html). Also, make sure to point the website to the `/Docs` folder. And [this is the final result](https://avramaral.github.io/GPcov/). 
+
+# Installing `GPcov` from GitHub 
+
+Based on [this page](https://github.com/avramaral/GPcov), you can see the instructions to installing an `R` package from GitHub. In particular, **after push it to GitHub**, the package can be installed with
+```{r, eval = FALSE}
+library(devtools)
+devtools::install_github("username/repositoryname", build_vignettes = TRUE)
+```
+where `username` and `repositoryname` has to be replaced to the appropriate values. Also, `build_vignettes = TRUE` is optional (although it is recommended).
