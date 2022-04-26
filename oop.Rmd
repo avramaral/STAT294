@@ -1,0 +1,13 @@
+---
+title: 'Object Oriented Programming in R'
+author: 'André Victor Ribeiro Amaral'
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+# Introduction
+
+In this tutorial, we will introduce the Object Oriented Programming (OOP) paradigm in R. Although, `R` can be seen more as a [Functional Language](https://en.wikipedia.org/wiki/Functional_programming), different OOP systems can be used. In particular, we will cover `S3` and `R6` (as we will define below). The main reference here is the [`Advanced R` book](https://adv-r.hadley.nz/index.html).

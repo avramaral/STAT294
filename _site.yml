@@ -9,6 +9,8 @@ navbar:
       href: git.html
     - text: 'R package'
       href: rpack.html
+    - text: 'OOP'
+      href: oop.html
   right:
     - icon: fa-globe
       href: https://avramaral.github.io/
