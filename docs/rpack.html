@@ -14,8 +14,8 @@
 
 <title>GPcov: Creating an R package</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 
@@ -87,6 +88,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -312,7 +316,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -354,7 +358,7 @@ div.tocify {
 
 
 <div id="introduction" class="section level1" number="1">
-<h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
+<h1><span class="header-section-number">1</span> Introduction</h1>
 <p>In this tutorial, we will create an <code>R</code> package (<a href="https://github.com/avramaral/GPcov/"><code>GPcov</code></a>) that computes the covariance matrix for Gaussian Processes with different dependence structures. Also, we will create a <a href="https://avramaral.github.io/GPcov/">website</a> for our package using <code>pkgdown</code>. The image below shows an screenshot of our <a href="https://avramaral.github.io/GPcov/">packages’ website</a></p>
 <div class="space">
 
@@ -369,7 +373,7 @@ div.tocify {
 </div>
 </div>
 <div id="creating-a-package-project" class="section level1" number="2">
-<h1 number="2"><span class="header-section-number">2</span> Creating a package project</h1>
+<h1><span class="header-section-number">2</span> Creating a package project</h1>
 <p>To create the <code>R</code> package, we will use different tools (e.g., <code>roxygen2</code> for documentation); however, most of the desired functionalities are encapsulated into two packages, namely <code>usethis</code> and <code>devtools</code>. We only need to load <code>devtools</code>, though (since it calls <code>usethis</code> internally). If you do not have them installed, do it and load <code>devtools</code>.</p>
 <pre class="r"><code>install.packages(c(&quot;devtools&quot;, &quot;roxygen2&quot;))
 
@@ -398,7 +402,7 @@ library(&quot;devtools&quot;)</code></pre>
 </div>
 </div>
 <div id="initial-settings" class="section level1" number="3">
-<h1 number="3"><span class="header-section-number">3</span> Initial settings</h1>
+<h1><span class="header-section-number">3</span> Initial settings</h1>
 <p>The first file we will change is <code>DESCRIPTION</code>. Here, we would like to describe our package’s functionalities, so that other people may have a rough idea on how it works. For <code>GPcov</code>, I edited it in the following way (change it as per your convenience)</p>
 <pre class="bash"><code>Package: GPcov
 Title: Compute covariance matrix for Gaussian processes
@@ -430,7 +434,7 @@ RoxygenNote: 7.1.2</code></pre>
 </div>
 </div>
 <div id="writing-our-r-code" class="section level1" number="4">
-<h1 number="4"><span class="header-section-number">4</span> Writing our <code>R</code> code</h1>
+<h1><span class="header-section-number">4</span> Writing our <code>R</code> code</h1>
 <p>Our <code>R</code> code is very simple (see below), and the main function is <code>compute_cov_matrix()</code>. During the tutorial, I will briefly go through it. However, our main goal will not be discussing the code itself, but creating an <code>R</code> package based on it.</p>
 <pre class="r"><code>library(&quot;GPBayes&quot;)
 
@@ -493,7 +497,7 @@ compute_cov_function &lt;- function (p, q, cov_func = &quot;white_noise&quot;, a
            cov_element &lt;- brownian_motion(p = p, q = q)
          }, exponential = {
            cov_element &lt;- exponential(p = p, q = q, sig2 = sig2, beta = arg[[&quot;beta&quot;]])
-         }, matern = {
+         }, matern_model = {
            cov_element &lt;- matern_model(p = p, q = q, sig2 = sig2, nu = arg[[&quot;nu&quot;]], beta = arg[[&quot;beta&quot;]])
          }, {
            stop(&quot;Select a valid covariance model.&quot;)
@@ -582,7 +586,7 @@ matern_model &lt;- function (p, q, sig2, nu, beta) {
 </div>
 </div>
 <div id="playing-with-gpcov" class="section level1" number="5">
-<h1 number="5"><span class="header-section-number">5</span> Playing with <code>GPcov</code></h1>
+<h1><span class="header-section-number">5</span> Playing with <code>GPcov</code></h1>
 <p>Since we already have a minimum viable product, we can test our <code>GPcov</code> package. To do this, we can use the following command</p>
 <pre class="r"><code>devtools::load_all()
 # After documenting all necessary functions, we can load only the exported functions.
@@ -618,7 +622,7 @@ for (i in 2:nrow(GP)) {
 </div>
 </div>
 <div id="documentation" class="section level1" number="6">
-<h1 number="6"><span class="header-section-number">6</span> Documentation</h1>
+<h1><span class="header-section-number">6</span> Documentation</h1>
 <p>To make our functions more user-friendly, it is important to document our code. For example, if we run <code>?compute_cov_matrix</code> now, nothing will happen; however, we would like to change it, so that users can understand how the methods work.</p>
 <p>Since the <code>compute_cov_matrix()</code> is the only function the users should have access to (other functions are only supposed to be internally used), that is the only one we will document and export. To do this, on the <code>compute_cov_matrix.R</code> file, update your code in the following way</p>
 <pre class="r"><code>#&#39; Compute covariance matrix for a Gaussian process
@@ -665,7 +669,7 @@ NULL</code></pre>
 </div>
 </div>
 <div id="unit-testing" class="section level1" number="7">
-<h1 number="7"><span class="header-section-number">7</span> Unit testing</h1>
+<h1><span class="header-section-number">7</span> Unit testing</h1>
 <p>Now, we will focus on an import part of any software development, namely <strong>unit testing</strong>. The idea is have reproducible tests that guarantee that our functions have the expect behavior under different scenarios. For a deeper discussion on “Why should I write unit tests?”, check <a href="https://r-pkgs.org/tests.html#tests">this book chapter</a>.</p>
 <p>For our package, we will only write tests for the <code>compute_cov_matrix()</code> function. But of course you can extent them to other methods too. To create a test file, we can use the following command</p>
 <pre class="r"><code>usethis::use_test(name = &quot;compute_cov_matrix&quot;)</code></pre>
@@ -698,7 +702,7 @@ NULL</code></pre>
 </div>
 </div>
 <div id="installing-gpcov-locally" class="section level1" number="8">
-<h1 number="8"><span class="header-section-number">8</span> Installing <code>GPcov</code> locally</h1>
+<h1><span class="header-section-number">8</span> Installing <code>GPcov</code> locally</h1>
 <p>Once we have a well-structured package, we can install it locally using the following command</p>
 <pre class="r"><code>devtools::install(build_vignettes = TRUE)</code></pre>
 <p>The <code>build_vignettes</code> argument is optional, but we will write a vignette latter, and it will be good have it available too.</p>
@@ -712,7 +716,7 @@ NULL</code></pre>
 </div>
 </div>
 <div id="readme-file-and-github" class="section level1" number="9">
-<h1 number="9"><span class="header-section-number">9</span> <code>README</code> file and GitHub</h1>
+<h1><span class="header-section-number">9</span> <code>README</code> file and GitHub</h1>
 <p>Assuming we want to share our package with the world, the easiest way to do this is publishing it on GitHub (for instructions on how to submit your package to <a href="https://cran.r-project.org/">CRAN</a>, see <a href="https://r-pkgs.org/release.html#release">this book chapter</a>). But first, let’s create a <code>README</code> file for our project.</p>
 <p>A <code>README</code> file is especially important when our project is hosted in a GitHub repository, since it will give users an overview of the package’s functionalities. It will also be used <code>pkgdown</code> when creating a website.</p>
 <p>To do this, we can use the following command</p>
@@ -726,7 +730,7 @@ NULL</code></pre>
 <p>Now, let’s check our project.</p>
 <pre class="r"><code>devtools::check()</code></pre>
 <div id="pushing-gpcov-to-github" class="section level2" number="9.1">
-<h2 number="9.1"><span class="header-section-number">9.1</span> Pushing <code>GPcov</code> to GitHub</h2>
+<h2><span class="header-section-number">9.1</span> Pushing <code>GPcov</code> to GitHub</h2>
 <p>Assuming everything is working with no errors, we can push our project to GitHub. To do this, you can follow <a href="git.html">this tutorial</a>. In particular, after setting your credentials, creating a new repository on Github, and linking it to your local project, you can use</p>
 <pre class="bash"><code>git add .
 git commit -m &#39;full package&#39;
@@ -737,15 +741,15 @@ git push</code></pre>
 </div>
 </div>
 <div id="creating-a-vignette" class="section level1" number="10">
-<h1 number="10"><span class="header-section-number">10</span> Creating a Vignette</h1>
+<h1><span class="header-section-number">10</span> Creating a Vignette</h1>
 <p>A vignette can be used as a small example of how to use your package. To create one, we can do as follows</p>
 <pre class="r"><code>usethis::use_vignette(name = &quot;introduction&quot;, title = &quot;Introduction to GPcov&quot;)</code></pre>
 <p>From the command, notice that a few folders and files have been created. However, we are interested in editing <code>vignettes/introduction.Rmd</code>. As for the <code>README</code> file, you can write it as you want; however, for this tutorial you can copy the content from <a href="https://github.com/avramaral/GPcov/blob/main/vignettes/introduction.Rmd">this snippet</a>.</p>
 <p>Also, since we are using other packages to run the vignettes, we have to include them in the <code>Suggests</code> section. In particular, we have to</p>
-<pre class="r"><code>usethis::use_package(package = &quot;knitr&quot;)
-usethis::use_package(package = &quot;rmarkdown&quot;)
-usethis::use_package(package = &quot;pheatmap&quot;)
-usethis::use_package(package = &quot;MASS&quot;)</code></pre>
+<pre class="r"><code>usethis::use_package(package = &quot;knitr&quot;, type = &quot;Suggests&quot;)
+usethis::use_package(package = &quot;rmarkdown&quot;, type = &quot;Suggests&quot;)
+usethis::use_package(package = &quot;pheatmap&quot;, type = &quot;Suggests&quot;)
+usethis::use_package(package = &quot;MASS&quot;, type = &quot;Suggests&quot;)</code></pre>
 <p>After doing this, you can build the vignettes (<code>build_vignettes()</code>) and build the package (<code>devtools::buil()</code>).</p>
 <pre class="r"><code>devtools::build_vignettes()
 devtools::build()</code></pre>
@@ -764,7 +768,7 @@ git push</code></pre>
 </div>
 </div>
 <div id="gpcov-website-with-pkgdown" class="section level1" number="11">
-<h1 number="11"><span class="header-section-number">11</span> <code>GPcov</code> website with <code>pkgdown</code></h1>
+<h1><span class="header-section-number">11</span> <code>GPcov</code> website with <code>pkgdown</code></h1>
 <p>To create a package website, we will use <a href="https://pkgdown.r-lib.org/"><code>pkgdown</code></a>. Thus, the first thing we have to do is installing and loading the package.</p>
 <pre class="r"><code>install.packages(&quot;pkgdown&quot;)
 library(&quot;pkgdown&quot;)</code></pre>
@@ -790,7 +794,7 @@ git push</code></pre>
 <p>As a last step, set the GitHub page as we <a href="git.html">learned here</a>. Also, make sure to point the website to the <code>/Docs</code> folder. And <a href="https://avramaral.github.io/GPcov/">this is the final result</a>.</p>
 </div>
 <div id="installing-gpcov-from-github" class="section level1" number="12">
-<h1 number="12"><span class="header-section-number">12</span> Installing <code>GPcov</code> from GitHub</h1>
+<h1><span class="header-section-number">12</span> Installing <code>GPcov</code> from GitHub</h1>
 <p>Based on <a href="https://github.com/avramaral/GPcov">this page</a>, you can see the instructions to installing an <code>R</code> package from GitHub. In particular, <strong>after push it to GitHub</strong>, the package can be installed with</p>
 <pre class="r"><code>library(devtools)
 devtools::install_github(&quot;username/repositoryname&quot;, build_vignettes = TRUE)</code></pre>

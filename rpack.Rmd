@@ -186,7 +186,7 @@ compute_cov_function <- function (p, q, cov_func = "white_noise", arg) {
            cov_element <- brownian_motion(p = p, q = q)
          }, exponential = {
            cov_element <- exponential(p = p, q = q, sig2 = sig2, beta = arg[["beta"]])
-         }, matern = {
+         }, matern_model = {
            cov_element <- matern_model(p = p, q = q, sig2 = sig2, nu = arg[["nu"]], beta = arg[["beta"]])
          }, {
            stop("Select a valid covariance model.")
@@ -526,10 +526,10 @@ From the command, notice that a few folders and files have been created. However
 
 Also, since we are using other packages to run the vignettes, we have to include them in the `Suggests` section. In particular, we have to
 ```{r, eval = FALSE}
-usethis::use_package(package = "knitr")
-usethis::use_package(package = "rmarkdown")
-usethis::use_package(package = "pheatmap")
-usethis::use_package(package = "MASS")
+usethis::use_package(package = "knitr", type = "Suggests")
+usethis::use_package(package = "rmarkdown", type = "Suggests")
+usethis::use_package(package = "pheatmap", type = "Suggests")
+usethis::use_package(package = "MASS", type = "Suggests")
 ```
 
 After doing this, you can build the vignettes (`build_vignettes()`) and build the package (`devtools::buil()`).
