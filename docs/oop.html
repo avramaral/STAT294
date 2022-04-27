@@ -438,12 +438,12 @@ fact</code></pre>
 ##      3      2</code></pre>
 <pre class="r"><code>summary(df)</code></pre>
 <pre><code>##        V1                V2          
-##  Min.   :-1.7095   Min.   :-0.22376  
-##  1st Qu.:-1.4945   1st Qu.:-0.01754  
-##  Median :-1.2795   Median : 0.18868  
-##  Mean   :-1.2795   Mean   : 0.18868  
-##  3rd Qu.:-1.0645   3rd Qu.: 0.39490  
-##  Max.   :-0.8495   Max.   : 0.60111</code></pre>
+##  Min.   :-1.0285   Min.   :-0.05797  
+##  1st Qu.:-0.8823   1st Qu.:-0.05535  
+##  Median :-0.7361   Median :-0.05273  
+##  Mean   :-0.7361   Mean   :-0.05273  
+##  3rd Qu.:-0.5898   3rd Qu.:-0.05011  
+##  Max.   :-0.4436   Max.   :-0.04750</code></pre>
 <p>For the <code>fact</code> object, <code>summary()</code> returns the count of observations in each class, and for the <code>df</code> object, it returns a few statistics that can be computed for each numeric vector (represented by <code>df</code>’s columns).</p>
 <p>If we want to check if a particular function is a <strong>generic function</strong>, we can use the <code>ftype()</code> function from the <code>sloop</code> package.</p>
 <pre class="r"><code>library(sloop)
@@ -469,7 +469,7 @@ sloop::ftype(f = summary)</code></pre>
 ##         c(tt, `NA&#39;s` = sum(nas))
 ##     else tt
 ## }
-## &lt;bytecode: 0x7fea82c820f0&gt;
+## &lt;bytecode: 0x7fcd60e0ca28&gt;
 ## &lt;environment: namespace:base&gt;</code></pre>
 <pre class="r"><code>summary.data.frame</code></pre>
 <pre><code>## function (object, maxsum = 7L, digits = max(3L, getOption(&quot;digits&quot;) - 
@@ -538,7 +538,7 @@ sloop::ftype(f = summary)</code></pre>
 ##     attr(z, &quot;class&quot;) &lt;- c(&quot;table&quot;)
 ##     z
 ## }
-## &lt;bytecode: 0x7fea82cde4e0&gt;
+## &lt;bytecode: 0x7fcd60e68e18&gt;
 ## &lt;environment: namespace:base&gt;</code></pre>
 <div class="space">
 
@@ -923,7 +923,13 @@ library(R6)</code></pre>
     invisible(self)
   }
 )) </code></pre>
-<p>A few things to be noticed from the above code: - The class name (<code>Students</code>) is the same as the <code>classname</code> parameter (<code>Students</code>). - For the <code>public</code> parameter (<code>private</code> and <code>active</code> also exist), we are defining <strong>attributes</strong> (<code>n_students</code>, <code>ids</code>, <code>names</code>) and <strong>methods</strong> (<code>add_student()</code>). - Inside the <code>add_student()</code> method, we have to use the <code>self$attribute</code> notation to refer to the objects’ attributes. - After calling a method, we are returning the object itself, so that we can use a chained notation (as we will see below).</p>
+<p>A few things to be noticed from the above code:</p>
+<ul>
+<li>The class name (<code>Students</code>) is the same as the <code>classname</code> parameter (<code>Students</code>).</li>
+<li>For the <code>public</code> parameter (<code>private</code> and <code>active</code> also exist), we are defining <strong>attributes</strong> (<code>n_students</code>, <code>ids</code>, <code>names</code>) and <strong>methods</strong> (<code>add_student()</code>).</li>
+<li>Inside the <code>add_student()</code> method, we have to use the <code>self$attribute</code> notation to refer to the objects’ attributes.</li>
+<li>After calling a method, we are returning the object itself, so that we can use a chained notation (as we will see below).</li>
+</ul>
 <p>Then, we can print the class <code>Students</code></p>
 <pre class="r"><code>Students</code></pre>
 <pre><code>## &lt;Students&gt; object generator
@@ -1124,14 +1130,14 @@ prjs</code></pre>
 ## 
 ## $grades
 ##      [,1] [,2] [,3]
-## [1,]    6    7    4
-## [2,]    5    1    3
-## [3,]    1    5    4
-## [4,]    9    3    5
-## [5,]    9    1    2
-## [6,]    2   10    4
-## [7,]    4    6    4
-## [8,]    4    5    7
+## [1,]   10    1    6
+## [2,]    5    3    3
+## [3,]    1    2    1
+## [4,]    9    2    4
+## [5,]    4    9    3
+## [6,]    1    9    2
+## [7,]    5    8    1
+## [8,]    6    4    8
 ## 
 ## attr(,&quot;class&quot;)
 ## [1] &quot;projects&quot;</code></pre>
@@ -1170,12 +1176,12 @@ presentation_schedule &lt;- function (x, dates, presentations_per_day) {
 }
 
 presentation_schedule(x = stds, dates = c(&#39;Monday&#39;, &#39;Thursday&#39;), presentations_per_day = 5)</code></pre>
-<pre><code>##    Monday Thursday
-## 1   MALIK      ANA
-## 2 MARTINA  YASMEEN
-## 3  QILONG   HATOON
-## 4   KARLA     &lt;NA&gt;
-## 5  RUIMAN     &lt;NA&gt;</code></pre>
+<pre><code>##   Monday Thursday
+## 1 QILONG      ANA
+## 2  KARLA  MARTINA
+## 3  MALIK  YASMEEN
+## 4 RUIMAN     &lt;NA&gt;
+## 5 HATOON     &lt;NA&gt;</code></pre>
 <p>For the <code>presentation_schedule()</code> function, notice that we also require <code>x</code> to be an object of class <code>students</code> <strong>or</strong> <code>projects</code>.</p>
 <div class="space">
 
@@ -1201,14 +1207,14 @@ print(prjs)</code></pre>
 ## 
 ## $grades
 ##      [,1] [,2] [,3]
-## [1,]    6    7    4
-## [2,]    5    1    3
-## [3,]    1    5    4
-## [4,]    9    3    5
-## [5,]    9    1    2
-## [6,]    2   10    4
-## [7,]    4    6    4
-## [8,]    4    5    7
+## [1,]   10    1    6
+## [2,]    5    3    3
+## [3,]    1    2    1
+## [4,]    9    2    4
+## [5,]    4    9    3
+## [6,]    1    9    2
+## [7,]    5    8    1
+## [8,]    6    4    8
 ## 
 ## attr(,&quot;class&quot;)
 ## [1] &quot;projects&quot;</code></pre>
@@ -1228,14 +1234,14 @@ print(prjs)</code></pre>
 # After
 print(prjs)</code></pre>
 <pre><code>##         Dashboard Shiny App R package
-## ANA             6         7         4
-## HATOON          5         1         3
-## KARLA           1         5         4
-## MALIK           9         3         5
-## MARTINA         9         1         2
-## QILONG          2        10         4
-## RUIMAN          4         6         4
-## YASMEEN         4         5         7</code></pre>
+## ANA            10         1         6
+## HATOON          5         3         3
+## KARLA           1         2         1
+## MALIK           9         2         4
+## MARTINA         4         9         3
+## QILONG          1         9         2
+## RUIMAN          5         8         1
+## YASMEEN         6         4         8</code></pre>
 <div class="space">
 
 </div>
@@ -1258,22 +1264,22 @@ print(prjs)</code></pre>
 
 summary(prjs)</code></pre>
 <pre><code>## Dashboard
-## mean: 5
-## sd:   2.9277
-## min:  1
-## max:  9
-##  
-## Shiny App
-## mean: 4.75
-## sd:   3.058945
+## mean: 5.125
+## sd:   3.270539
 ## min:  1
 ## max:  10
 ##  
+## Shiny App
+## mean: 4.75
+## sd:   3.370036
+## min:  1
+## max:  9
+##  
 ## R package
-## mean: 4.125
-## sd:   1.457738
-## min:  2
-## max:  7
+## mean: 3.5
+## sd:   2.44949
+## min:  1
+## max:  8
 ## </code></pre>
 <div class="space">
 

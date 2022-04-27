@@ -251,6 +251,7 @@ Students <- R6Class(classname = 'Students', public = list(
 )) 
 ```
 A few things to be noticed from the above code:
+
 - The class name (`Students`) is the same as the `classname` parameter (`Students`).
 - For the `public` parameter (`private` and `active` also exist), we are defining **attributes** (`n_students`, `ids`, `names`) and **methods** (`add_student()`).
 - Inside the `add_student()` method, we have to use the `self$attribute` notation to refer to the objects' attributes.
