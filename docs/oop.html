@@ -362,7 +362,1114 @@ div.tocify {
 
 <div id="introduction" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
-<p>In this tutorial, we will introduce the Object Oriented Programming (OOP) paradigm in R. Although, <code>R</code> can be seen more as a <a href="https://en.wikipedia.org/wiki/Functional_programming">Functional Language</a>, different OOP systems can be used. In particular, we will cover <code>S3</code> and <code>R6</code> (as we will define below). The main reference here is the <a href="https://adv-r.hadley.nz/index.html"><code>Advanced R</code> book</a>.</p>
+<p>In this tutorial, we will introduce the Object Oriented Programming (OOP) paradigm in <code>R</code>. Although, <code>R</code> can be seen more as a <a href="https://en.wikipedia.org/wiki/Functional_programming">Functional Language</a>, different OOP systems can be used. In particular, we will cover <code>S3</code> and <code>R6</code> (as we will define below). The main reference here is the <a href="https://adv-r.hadley.nz/index.html"><code>Advanced R</code> book</a>.</p>
+<hr />
+<p>Different from other programming languages, there are (at least) 4 different OOP systems available in <code>R</code>, namely, <code>S3</code>, <code>S4</code>, <code>RC</code> (which stands for Reference Class), and <code>R6</code> (from the <code>R6</code> package). Also, although OOP is important in <code>R</code>, <code>R</code> can be seen as an Functional Language, that is, a language made of <em>first-class functions</em> (functions that behave like any other data structure) that are used to solve problems.</p>
+<p>In this regard, we also have to make the distinction between <strong>encapsulated OOP</strong> and <strong>functional OOP</strong>. The former works like in most of the other languages (e.g., Python, Java, etc.), in which the methods belong to objects or classes, and <em>method calls</em> typically look like <code>object.method(arg)</code>, and the latter works through generic functions, and <em>method calls</em> look like ordinary function calls, as in <code>generic(arg)</code>.</p>
+<p>In <code>R</code>,</p>
+<ul>
+<li><code>S3</code> is an informal implementation of <strong>functional OOP</strong> and relies on common conventions. Functions have different behaviors depending on the arguments’ class.</li>
+<li><code>S4</code> is a formal and rigorous rewrite of <code>S3</code>. It is also an implementation of <strong>functional OOP</strong>.</li>
+<li><code>RC</code> implements <strong>encapsulated OOP</strong>.</li>
+<li><code>R6</code> implements <strong>encapsulated OOP</strong>, like <code>RC</code>, but resolves some issues.</li>
+</ul>
+<div class="space">
+
+</div>
+</div>
+<div id="oop" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> OOP</h1>
+<p>In Object Oriented Programming (OOP) paradigm (more specifically, in <strong>encapsulated OOP</strong>), we have (among other concepts) <strong>classes</strong>, <strong>objects</strong>, <strong>methods</strong>, and <strong>attributes</strong>. Roughly speaking, a <code>class</code> is a definition of an object, an <code>object</code> is an instance of a class created with specifically defined data, a <code>method</code> is a function that describes the behavior of an object, and an <code>attribute</code> is a variable associated with an object that represents its state.</p>
+<p>However, In <strong>base</strong> <code>R</code>, things are a bit different. Although one may see online that “<em>everything that exists in <code>R</code> is an object</em>”, we have to distinct <strong>base objects</strong> from <strong>OO objects</strong>. OO objects have a class attribute. For instance,</p>
+<pre class="r"><code>ch &lt;- character()
+is.object(x = ch)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>df &lt;- as.data.frame(matrix(data = rnorm(n = 4), nrow = 2, ncol = 2))
+is.object(x = df)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>attr(ch, &#39;class&#39;)</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>attr(df, &#39;class&#39;)</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<p>Every object has a base type, though. You can access it with the <code>typeof()</code> function.</p>
+<pre class="r"><code>typeof(ch)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<pre class="r"><code>typeof(df)</code></pre>
+<pre><code>## [1] &quot;list&quot;</code></pre>
+<div class="space">
+
+</div>
+<div id="s3" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> <code>S3</code></h2>
+<p><code>S3</code> is the simplest OOP implemented system. As it is a <strong>functional OOP</strong> implementation, it will not follow the commonly used notation for creating objects and calling methods (e.g., <code>object.method(arg)</code>); instead we will mostly use them along with <strong>polymorphic</strong> functions (i.e., functions that behave differently depending on their input).</p>
+<p>Let’s start with the following example</p>
+<pre class="r"><code>fact &lt;- factor(x = c(1, 2, 1, 1, 2), levels = c(1, 2), labels = c(&#39;first&#39;, &#39;second&#39;))
+fact</code></pre>
+<pre><code>## [1] first  second first  first  second
+## Levels: first second</code></pre>
+<pre class="r"><code>is.object(x = fact)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>attr(fact, &#39;class&#39;)</code></pre>
+<pre><code>## [1] &quot;factor&quot;</code></pre>
+<pre class="r"><code>typeof(x = fact)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>attributes(fact)</code></pre>
+<pre><code>## $levels
+## [1] &quot;first&quot;  &quot;second&quot;
+## 
+## $class
+## [1] &quot;factor&quot;</code></pre>
+<p>Notice that <code>fact</code> is an OO object with class <code>factor</code>. In this regard, we can get the underlying base type of <code>fact</code> by using the <code>unclass()</code> function.</p>
+<pre class="r"><code>unclass(fact)</code></pre>
+<pre><code>## [1] 1 2 1 1 2
+## attr(,&quot;levels&quot;)
+## [1] &quot;first&quot;  &quot;second&quot;</code></pre>
+<p>A (not so) easy way to test if an object is a <code>S3</code> object is doing the following (i.e., testing if it is a OO object and if it is <strong>not</strong> a <code>S4</code> object)</p>
+<pre class="r"><code>is.object(fact) &amp; (!isS4(fact))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<div class="space">
+
+</div>
+<div id="generic-functions" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Generic functions</h3>
+<p>However, the main advantage of using such a system is related to the <strong>generic functions</strong>. In that case, depending on the input class, the functions behaves differently. For instance, let’s see how the <code>summary()</code> function works with <code>fact</code> and with the data frame <code>df</code>.</p>
+<pre class="r"><code>summary(fact)</code></pre>
+<pre><code>##  first second 
+##      3      2</code></pre>
+<pre class="r"><code>summary(df)</code></pre>
+<pre><code>##        V1                V2          
+##  Min.   :-1.7095   Min.   :-0.22376  
+##  1st Qu.:-1.4945   1st Qu.:-0.01754  
+##  Median :-1.2795   Median : 0.18868  
+##  Mean   :-1.2795   Mean   : 0.18868  
+##  3rd Qu.:-1.0645   3rd Qu.: 0.39490  
+##  Max.   :-0.8495   Max.   : 0.60111</code></pre>
+<p>For the <code>fact</code> object, <code>summary()</code> returns the count of observations in each class, and for the <code>df</code> object, it returns a few statistics that can be computed for each numeric vector (represented by <code>df</code>’s columns).</p>
+<p>If we want to check if a particular function is a <strong>generic function</strong>, we can use the <code>ftype()</code> function from the <code>sloop</code> package.</p>
+<pre class="r"><code>library(sloop)
+sloop::ftype(f = summary)</code></pre>
+<pre><code>## [1] &quot;S3&quot;      &quot;generic&quot;</code></pre>
+<p>Also, if we want to see how <code>summary(fact)</code> is different from <code>summary(nv)</code>, we can call <code>summary.factor</code> and <code>summary.data.frame</code>.</p>
+<pre class="r"><code>summary.factor</code></pre>
+<pre><code>## function (object, maxsum = 100L, ...) 
+## {
+##     nas &lt;- is.na(object)
+##     ll &lt;- levels(object)
+##     if (ana &lt;- any(nas)) 
+##         maxsum &lt;- maxsum - 1L
+##     tbl &lt;- table(object)
+##     tt &lt;- c(tbl)
+##     names(tt) &lt;- dimnames(tbl)[[1L]]
+##     if (length(ll) &gt; maxsum) {
+##         drop &lt;- maxsum:length(ll)
+##         o &lt;- sort.list(tt, decreasing = TRUE)
+##         tt &lt;- c(tt[o[-drop]], `(Other)` = sum(tt[o[drop]]))
+##     }
+##     if (ana) 
+##         c(tt, `NA&#39;s` = sum(nas))
+##     else tt
+## }
+## &lt;bytecode: 0x7fea82c820f0&gt;
+## &lt;environment: namespace:base&gt;</code></pre>
+<pre class="r"><code>summary.data.frame</code></pre>
+<pre><code>## function (object, maxsum = 7L, digits = max(3L, getOption(&quot;digits&quot;) - 
+##     3L), ...) 
+## {
+##     ncw &lt;- function(x) {
+##         z &lt;- nchar(x, type = &quot;w&quot;)
+##         if (any(na &lt;- is.na(z))) {
+##             z[na] &lt;- nchar(encodeString(z[na]), &quot;b&quot;)
+##         }
+##         z
+##     }
+##     z &lt;- lapply(X = as.list(object), FUN = summary, maxsum = maxsum, 
+##         digits = 12L, ...)
+##     nv &lt;- length(object)
+##     nm &lt;- names(object)
+##     lw &lt;- numeric(nv)
+##     nr &lt;- if (nv) 
+##         max(vapply(z, function(x) NROW(x) + !is.null(attr(x, 
+##             &quot;NAs&quot;)), integer(1)))
+##     else 0
+##     for (i in seq_len(nv)) {
+##         sms &lt;- z[[i]]
+##         if (is.matrix(sms)) {
+##             cn &lt;- paste(nm[i], gsub(&quot;^ +&quot;, &quot;&quot;, colnames(sms), 
+##                 useBytes = TRUE), sep = &quot;.&quot;)
+##             tmp &lt;- format(sms)
+##             if (nrow(sms) &lt; nr) 
+##                 tmp &lt;- rbind(tmp, matrix(&quot;&quot;, nr - nrow(sms), 
+##                   ncol(sms)))
+##             sms &lt;- apply(tmp, 1L, function(x) paste(x, collapse = &quot;  &quot;))
+##             wid &lt;- sapply(tmp[1L, ], nchar, type = &quot;w&quot;)
+##             blanks &lt;- paste(character(max(wid)), collapse = &quot; &quot;)
+##             wcn &lt;- ncw(cn)
+##             pad0 &lt;- floor((wid - wcn)/2)
+##             pad1 &lt;- wid - wcn - pad0
+##             cn &lt;- paste0(substring(blanks, 1L, pad0), cn, substring(blanks, 
+##                 1L, pad1))
+##             nm[i] &lt;- paste(cn, collapse = &quot;  &quot;)
+##         }
+##         else {
+##             sms &lt;- format(sms, digits = digits)
+##             lbs &lt;- format(names(sms))
+##             sms &lt;- paste0(lbs, &quot;:&quot;, sms, &quot;  &quot;)
+##             lw[i] &lt;- ncw(lbs[1L])
+##             length(sms) &lt;- nr
+##         }
+##         z[[i]] &lt;- sms
+##     }
+##     if (nv) {
+##         z &lt;- unlist(z, use.names = TRUE)
+##         dim(z) &lt;- c(nr, nv)
+##         if (anyNA(lw)) 
+##             warning(&quot;probably wrong encoding in names(.) of column &quot;, 
+##                 paste(which(is.na(lw)), collapse = &quot;, &quot;))
+##         blanks &lt;- paste(character(max(lw, na.rm = TRUE) + 2L), 
+##             collapse = &quot; &quot;)
+##         pad &lt;- floor(lw - ncw(nm)/2)
+##         nm &lt;- paste0(substring(blanks, 1, pad), nm)
+##         dimnames(z) &lt;- list(rep.int(&quot;&quot;, nr), nm)
+##     }
+##     else {
+##         z &lt;- character()
+##         dim(z) &lt;- c(nr, nv)
+##     }
+##     attr(z, &quot;class&quot;) &lt;- c(&quot;table&quot;)
+##     z
+## }
+## &lt;bytecode: 0x7fea82cde4e0&gt;
+## &lt;environment: namespace:base&gt;</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="creating-new-classes" class="section level3" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Creating new classes</h3>
+<p>Now, let’s create a new class and make an object that is an instance of such a class. This can be done using the <code>structure()</code> function, or in a two-step procedure</p>
+<pre class="r"><code># One step
+obj &lt;- structure(&#39;André&#39;, class = &#39;person&#39;)
+# Two steps
+obj &lt;- &#39;André&#39;
+class(obj) &lt;- &#39;person&#39;
+attr(obj, &#39;class&#39;)</code></pre>
+<pre><code>## [1] &quot;person&quot;</code></pre>
+<pre class="r"><code>is.object(obj)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>However, because there is no validation on the how a class can be assigned to an object, when creating a new class, it is better to provide at least three functions: a <em>constructor</em>, a <em>validator</em>, and a <em>helper</em>.</p>
+<pre class="r"><code># Constructor
+new_person &lt;- function (x = character()) {
+  if (!is.character(x)) { stop(&#39;&quot;x&quot; should be a &quot;character&quot;.&#39;) }
+  structure(x, class = &#39;person&#39;)
+}
+
+obj &lt;- new_person(1)</code></pre>
+<pre><code>## Error in new_person(1): &quot;x&quot; should be a &quot;character&quot;.</code></pre>
+<pre class="r"><code>obj &lt;- new_person(&#39;André&#39;)
+attr(obj, &#39;class&#39;)</code></pre>
+<pre><code>## [1] &quot;person&quot;</code></pre>
+<pre class="r"><code># Validator
+validate_person &lt;- function (x) {
+  values &lt;- unclass(x)
+  if (length(values) == 0) { stop(&#39;Object of this class must be have length &gt;= 1.&#39;) }
+  x
+}
+obj &lt;- validate_person(new_person(character()))</code></pre>
+<pre><code>## Error in validate_person(new_person(character())): Object of this class must be have length &gt;= 1.</code></pre>
+<pre class="r"><code>obj &lt;- validate_person(new_person(&#39;André&#39;))
+print.default(obj)</code></pre>
+<pre><code>## [1] &quot;André&quot;
+## attr(,&quot;class&quot;)
+## [1] &quot;person&quot;</code></pre>
+<pre class="r"><code># Helper (coerce the input to a valid value)
+person &lt;- function (x) { # same name as the class
+  if (length(x) == 0) { x &lt;- &#39;André&#39; }
+  validate_person(new_person(x))
+}
+obj &lt;- person(character())
+print.default(obj)</code></pre>
+<pre><code>## [1] &quot;André&quot;
+## attr(,&quot;class&quot;)
+## [1] &quot;person&quot;</code></pre>
+<p>Since we have a new class, we can also code new behaviors for any <strong>generic function</strong> we want. For instance, we can customize the <code>print()</code> function for an object of class <code>person</code>. To do so, we can use the notation <code>generic_function.class_name()</code> when creating the functions; in particular</p>
+<pre class="r"><code>print.person &lt;- function (x, ...) {
+  x &lt;- unclass(x)
+  m &lt;- paste(&#39;Hi, my name is &#39;, x, &#39;.&#39;, sep = &#39;&#39;)
+  print(m)
+  invisible(m)
+}
+
+print(obj)</code></pre>
+<pre><code>## [1] &quot;Hi, my name is André.&quot;</code></pre>
+<p>To obtain a list of the possible choices for <code>arg</code> in <code>print(arg)</code>, one can use the <code>sloop::s3_methods_generic()</code> function.</p>
+<pre class="r"><code>sloop::s3_methods_generic(&#39;print&#39;)$class</code></pre>
+<pre><code>##   [1] &quot;acf&quot;                                          
+##   [2] &quot;AES&quot;                                          
+##   [3] &quot;anova&quot;                                        
+##   [4] &quot;aov&quot;                                          
+##   [5] &quot;aovlist&quot;                                      
+##   [6] &quot;ar&quot;                                           
+##   [7] &quot;Arima&quot;                                        
+##   [8] &quot;arima0&quot;                                       
+##   [9] &quot;AsIs&quot;                                         
+##  [10] &quot;aspell&quot;                                       
+##  [11] &quot;aspell_inspect_context&quot;                       
+##  [12] &quot;bibentry&quot;                                     
+##  [13] &quot;Bibtex&quot;                                       
+##  [14] &quot;browseVignettes&quot;                              
+##  [15] &quot;bslib_fragment&quot;                               
+##  [16] &quot;bslib_page&quot;                                   
+##  [17] &quot;by&quot;                                           
+##  [18] &quot;changedFiles&quot;                                 
+##  [19] &quot;check_bogus_return&quot;                           
+##  [20] &quot;check_code_usage_in_package&quot;                  
+##  [21] &quot;check_compiled_code&quot;                          
+##  [22] &quot;check_demo_index&quot;                             
+##  [23] &quot;check_depdef&quot;                                 
+##  [24] &quot;check_details&quot;                                
+##  [25] &quot;check_details_changes&quot;                        
+##  [26] &quot;check_doi_db&quot;                                 
+##  [27] &quot;check_dotInternal&quot;                            
+##  [28] &quot;check_make_vars&quot;                              
+##  [29] &quot;check_nonAPI_calls&quot;                           
+##  [30] &quot;check_package_code_assign_to_globalenv&quot;       
+##  [31] &quot;check_package_code_attach&quot;                    
+##  [32] &quot;check_package_code_data_into_globalenv&quot;       
+##  [33] &quot;check_package_code_startup_functions&quot;         
+##  [34] &quot;check_package_code_syntax&quot;                    
+##  [35] &quot;check_package_code_unload_functions&quot;          
+##  [36] &quot;check_package_compact_datasets&quot;               
+##  [37] &quot;check_package_CRAN_incoming&quot;                  
+##  [38] &quot;check_package_datalist&quot;                       
+##  [39] &quot;check_package_datasets&quot;                       
+##  [40] &quot;check_package_depends&quot;                        
+##  [41] &quot;check_package_description&quot;                    
+##  [42] &quot;check_package_description_encoding&quot;           
+##  [43] &quot;check_package_license&quot;                        
+##  [44] &quot;check_packages_in_dir&quot;                        
+##  [45] &quot;check_packages_used&quot;                          
+##  [46] &quot;check_po_files&quot;                               
+##  [47] &quot;check_pragmas&quot;                                
+##  [48] &quot;check_Rd_line_widths&quot;                         
+##  [49] &quot;check_Rd_metadata&quot;                            
+##  [50] &quot;check_Rd_xrefs&quot;                               
+##  [51] &quot;check_RegSym_calls&quot;                           
+##  [52] &quot;check_S3_methods_needing_delayed_registration&quot;
+##  [53] &quot;check_so_symbols&quot;                             
+##  [54] &quot;check_T_and_F&quot;                                
+##  [55] &quot;check_url_db&quot;                                 
+##  [56] &quot;check_vignette_index&quot;                         
+##  [57] &quot;checkDocFiles&quot;                                
+##  [58] &quot;checkDocStyle&quot;                                
+##  [59] &quot;checkFF&quot;                                      
+##  [60] &quot;checkRd&quot;                                      
+##  [61] &quot;checkRdContents&quot;                              
+##  [62] &quot;checkReplaceFuns&quot;                             
+##  [63] &quot;checkS3methods&quot;                               
+##  [64] &quot;checkTnF&quot;                                     
+##  [65] &quot;checkVignettes&quot;                               
+##  [66] &quot;citation&quot;                                     
+##  [67] &quot;cli_ansi_html_style&quot;                          
+##  [68] &quot;cli_ansi_string&quot;                              
+##  [69] &quot;cli_ansi_style&quot;                               
+##  [70] &quot;cli_boxx&quot;                                     
+##  [71] &quot;cli_diff_chr&quot;                                 
+##  [72] &quot;cli_doc&quot;                                      
+##  [73] &quot;cli_progress_demo&quot;                            
+##  [74] &quot;cli_rule&quot;                                     
+##  [75] &quot;cli_sitrep&quot;                                   
+##  [76] &quot;cli_spark&quot;                                    
+##  [77] &quot;cli_spinner&quot;                                  
+##  [78] &quot;cli_tree&quot;                                     
+##  [79] &quot;codoc&quot;                                        
+##  [80] &quot;codocClasses&quot;                                 
+##  [81] &quot;codocData&quot;                                    
+##  [82] &quot;colorConverter&quot;                               
+##  [83] &quot;compactPDF&quot;                                   
+##  [84] &quot;condition&quot;                                    
+##  [85] &quot;connection&quot;                                   
+##  [86] &quot;CRAN_package_reverse_dependencies_and_views&quot;  
+##  [87] &quot;css&quot;                                          
+##  [88] &quot;data.frame&quot;                                   
+##  [89] &quot;Date&quot;                                         
+##  [90] &quot;default&quot;                                      
+##  [91] &quot;dendrogram&quot;                                   
+##  [92] &quot;density&quot;                                      
+##  [93] &quot;difftime&quot;                                     
+##  [94] &quot;dist&quot;                                         
+##  [95] &quot;Dlist&quot;                                        
+##  [96] &quot;DLLInfo&quot;                                      
+##  [97] &quot;DLLInfoList&quot;                                  
+##  [98] &quot;DLLRegisteredRoutines&quot;                        
+##  [99] &quot;document_context&quot;                             
+## [100] &quot;document_position&quot;                            
+## [101] &quot;document_range&quot;                               
+## [102] &quot;document_selection&quot;                           
+## [103] &quot;dummy_coef&quot;                                   
+## [104] &quot;dummy_coef_list&quot;                              
+## [105] &quot;ecdf&quot;                                         
+## [106] &quot;eigen&quot;                                        
+## [107] &quot;factanal&quot;                                     
+## [108] &quot;factor&quot;                                       
+## [109] &quot;family&quot;                                       
+## [110] &quot;fileSnapshot&quot;                                 
+## [111] &quot;findLineNumResult&quot;                            
+## [112] &quot;formula&quot;                                      
+## [113] &quot;fseq&quot;                                         
+## [114] &quot;ftable&quot;                                       
+## [115] &quot;function&quot;                                     
+## [116] &quot;getAnywhere&quot;                                  
+## [117] &quot;glm&quot;                                          
+## [118] &quot;hclust&quot;                                       
+## [119] &quot;help_files_with_topic&quot;                        
+## [120] &quot;hexmode&quot;                                      
+## [121] &quot;HoltWinters&quot;                                  
+## [122] &quot;hsearch&quot;                                      
+## [123] &quot;hsearch_db&quot;                                   
+## [124] &quot;htest&quot;                                        
+## [125] &quot;html&quot;                                         
+## [126] &quot;html_dependency&quot;                              
+## [127] &quot;htmltools.selector&quot;                           
+## [128] &quot;htmltools.selector.list&quot;                      
+## [129] &quot;infl&quot;                                         
+## [130] &quot;integrate&quot;                                    
+## [131] &quot;isoreg&quot;                                       
+## [132] &quot;json&quot;                                         
+## [133] &quot;key_missing&quot;                                  
+## [134] &quot;kmeans&quot;                                       
+## [135] &quot;knitr_kable&quot;                                  
+## [136] &quot;Latex&quot;                                        
+## [137] &quot;LaTeX&quot;                                        
+## [138] &quot;libraryIQR&quot;                                   
+## [139] &quot;listof&quot;                                       
+## [140] &quot;lm&quot;                                           
+## [141] &quot;loadings&quot;                                     
+## [142] &quot;loess&quot;                                        
+## [143] &quot;logLik&quot;                                       
+## [144] &quot;ls_str&quot;                                       
+## [145] &quot;medpolish&quot;                                    
+## [146] &quot;method_table&quot;                                 
+## [147] &quot;MethodsFunction&quot;                              
+## [148] &quot;mtable&quot;                                       
+## [149] &quot;NativeRoutineList&quot;                            
+## [150] &quot;news_db&quot;                                      
+## [151] &quot;nls&quot;                                          
+## [152] &quot;noquote&quot;                                      
+## [153] &quot;numeric_version&quot;                              
+## [154] &quot;object_size&quot;                                  
+## [155] &quot;octmode&quot;                                      
+## [156] &quot;packageDescription&quot;                           
+## [157] &quot;packageInfo&quot;                                  
+## [158] &quot;packageIQR&quot;                                   
+## [159] &quot;packageStatus&quot;                                
+## [160] &quot;pairwise.htest&quot;                               
+## [161] &quot;person&quot;                                       
+## [162] &quot;POSIXct&quot;                                      
+## [163] &quot;POSIXlt&quot;                                      
+## [164] &quot;power.htest&quot;                                  
+## [165] &quot;ppr&quot;                                          
+## [166] &quot;prcomp&quot;                                       
+## [167] &quot;princomp&quot;                                     
+## [168] &quot;proc_time&quot;                                    
+## [169] &quot;quosure&quot;                                      
+## [170] &quot;quosures&quot;                                     
+## [171] &quot;R6&quot;                                           
+## [172] &quot;R6ClassGenerator&quot;                             
+## [173] &quot;raster&quot;                                       
+## [174] &quot;Rd&quot;                                           
+## [175] &quot;recordedplot&quot;                                 
+## [176] &quot;restart&quot;                                      
+## [177] &quot;RGBcolorConverter&quot;                            
+## [178] &quot;rlang_box_done&quot;                               
+## [179] &quot;rlang_box_splice&quot;                             
+## [180] &quot;rlang_data_pronoun&quot;                           
+## [181] &quot;rlang_dict&quot;                                   
+## [182] &quot;rlang_dyn_array&quot;                              
+## [183] &quot;rlang_envs&quot;                                   
+## [184] &quot;rlang_error&quot;                                  
+## [185] &quot;rlang_fake_data_pronoun&quot;                      
+## [186] &quot;rlang_lambda_function&quot;                        
+## [187] &quot;rlang_message&quot;                                
+## [188] &quot;rlang_trace&quot;                                  
+## [189] &quot;rlang_warning&quot;                                
+## [190] &quot;rlang_zap&quot;                                    
+## [191] &quot;rlang:::list_of_conditions&quot;                   
+## [192] &quot;rle&quot;                                          
+## [193] &quot;rlib_bytes&quot;                                   
+## [194] &quot;roman&quot;                                        
+## [195] &quot;sass&quot;                                         
+## [196] &quot;sass_bundle&quot;                                  
+## [197] &quot;sass_layer&quot;                                   
+## [198] &quot;scalar&quot;                                       
+## [199] &quot;sessionInfo&quot;                                  
+## [200] &quot;shiny.tag&quot;                                    
+## [201] &quot;shiny.tag.env&quot;                                
+## [202] &quot;shiny.tag.list&quot;                               
+## [203] &quot;shiny.tag.query&quot;                              
+## [204] &quot;simple.list&quot;                                  
+## [205] &quot;smooth.spline&quot;                                
+## [206] &quot;socket&quot;                                       
+## [207] &quot;srcfile&quot;                                      
+## [208] &quot;srcref&quot;                                       
+## [209] &quot;stepfun&quot;                                      
+## [210] &quot;stl&quot;                                          
+## [211] &quot;StructTS&quot;                                     
+## [212] &quot;subdir_tests&quot;                                 
+## [213] &quot;summarize_CRAN_check_status&quot;                  
+## [214] &quot;summary.aov&quot;                                  
+## [215] &quot;summary.aovlist&quot;                              
+## [216] &quot;summary.ecdf&quot;                                 
+## [217] &quot;summary.glm&quot;                                  
+## [218] &quot;summary.lm&quot;                                   
+## [219] &quot;summary.loess&quot;                                
+## [220] &quot;summary.manova&quot;                               
+## [221] &quot;summary.nls&quot;                                  
+## [222] &quot;summary.packageStatus&quot;                        
+## [223] &quot;summary.ppr&quot;                                  
+## [224] &quot;summary.prcomp&quot;                               
+## [225] &quot;summary.princomp&quot;                             
+## [226] &quot;summary.table&quot;                                
+## [227] &quot;summary.warnings&quot;                             
+## [228] &quot;summaryDefault&quot;                               
+## [229] &quot;table&quot;                                        
+## [230] &quot;tables_aov&quot;                                   
+## [231] &quot;terms&quot;                                        
+## [232] &quot;ts&quot;                                           
+## [233] &quot;tskernel&quot;                                     
+## [234] &quot;TukeyHSD&quot;                                     
+## [235] &quot;tukeyline&quot;                                    
+## [236] &quot;tukeysmooth&quot;                                  
+## [237] &quot;undoc&quot;                                        
+## [238] &quot;vignette&quot;                                     
+## [239] &quot;warnings&quot;                                     
+## [240] &quot;xfun_raw_string&quot;                              
+## [241] &quot;xfun_rename_seq&quot;                              
+## [242] &quot;xfun_strict_list&quot;                             
+## [243] &quot;xgettext&quot;                                     
+## [244] &quot;xngettext&quot;                                    
+## [245] &quot;xtabs&quot;</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="creating-new-generic-functions" class="section level3" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> Creating new generic functions</h3>
+<p>As the <code>summary()</code> and <code>print()</code> functions, we can also create our own <strong>generic functions</strong>. To do so, we have to use the <code>UseMethod()</code> function. For example, we will create the <code>display()</code> function that will “mimic” the <code>print()</code> function output.</p>
+<pre class="r"><code>display &lt;- function (x, ...) {
+  UseMethod(&#39;display&#39;)
+}</code></pre>
+<p>Now, all we have to do is creating the specific behaviors depending on the object class.</p>
+<pre class="r"><code>display.person &lt;- function (x, ...) {
+  x &lt;- unclass(x)
+  m &lt;- paste(x, &#39; is a person.&#39;, sep = &#39;&#39;)
+  print(m)
+  invisible(m)
+}
+
+display.animal &lt;- function (x, ...) {
+  x &lt;- unclass(x)
+  m &lt;- paste(x, &#39; is an animal&#39;, sep = &#39;&#39;)
+  print(m)
+  invisible(m)
+}</code></pre>
+<p>We can create objects from the <code>person</code> and <code>animal</code> (and others) classes as before.</p>
+<pre class="r"><code>p &lt;- person(&#39;André&#39;)
+a &lt;- structure(&#39;Dog&#39;, class = &#39;animal&#39;)
+o &lt;- structure(&#39;Key&#39;, class = &#39;object&#39;)</code></pre>
+<p>And then, using the <code>display()</code> function for each of these objects.</p>
+<pre class="r"><code>display(p)</code></pre>
+<pre><code>## [1] &quot;André is a person.&quot;</code></pre>
+<pre class="r"><code>display(a)</code></pre>
+<pre><code>## [1] &quot;Dog is an animal&quot;</code></pre>
+<pre class="r"><code>display(o)</code></pre>
+<pre><code>## Error in UseMethod(&quot;display&quot;): no applicable method for &#39;display&#39; applied to an object of class &quot;object&quot;</code></pre>
+<p>In the above example, notice that, since we did not create a function <code>display.object()</code>, the <code>display()</code> function did not any coded behavior for an object with class <code>object</code>. To overcome this issue, we can create a <code>default</code> behavior for <code>display()</code>.</p>
+<pre class="r"><code>display.default &lt;- function (x, ...) {
+  x &lt;- unclass(x)
+  m &lt;- paste(x, &#39; is not a person or an animal.&#39;, sep = &#39;&#39;)
+  print(m)
+  invisible(m)
+}
+
+display(o)</code></pre>
+<pre><code>## [1] &quot;Key is not a person or an animal.&quot;</code></pre>
+<div class="space">
+
+</div>
+<p>More about <code>S3</code> can be seen <a href="https://adv-r.hadley.nz/s3.html">here</a>.</p>
+</div>
+</div>
+<div id="r6" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> <code>R6</code></h2>
+<p><code>R6</code> uses the <strong>encapsulated OOP</strong> paradigm, and therefore, it looks more like OOP in other languages. In particular, we will use the <code>object$method(arg)</code> notation, which is similar to the <code>object.method(arg)</code> notation from, for example, Python.</p>
+<p>As in the Introduction, to use the <code>R6</code> system, we have to install and load the <code>R6</code> library.</p>
+<pre class="r"><code># install.packages(&#39;R6&#39;)
+library(R6)</code></pre>
+<div class="space">
+
+</div>
+<div id="creating-new-classes-1" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Creating new classes</h3>
+<p>And from the <code>R6</code> package, we will be only interested in the <code>R6Class()</code> function to create classes and their methods. To do this, we can proceed as follows</p>
+<pre class="r"><code>Students &lt;- R6Class(classname = &#39;Students&#39;, public = list(
+  n_students = 0,
+  ids = c(),
+  names = c(), 
+  add_student = function (id, name, ...) {
+    if ((length(id) &gt; 1) | (length(name) &gt; 1)) { stop(&#39;Only one student should be added each time.&#39;) }
+    self$n_students &lt;- self$n_students + 1
+    self$ids &lt;- c(self$ids, id)
+    self$names &lt;- c(self$names, name)
+    invisible(self)
+  }
+)) </code></pre>
+<p>A few things to be noticed from the above code: - The class name (<code>Students</code>) is the same as the <code>classname</code> parameter (<code>Students</code>). - For the <code>public</code> parameter (<code>private</code> and <code>active</code> also exist), we are defining <strong>attributes</strong> (<code>n_students</code>, <code>ids</code>, <code>names</code>) and <strong>methods</strong> (<code>add_student()</code>). - Inside the <code>add_student()</code> method, we have to use the <code>self$attribute</code> notation to refer to the objects’ attributes. - After calling a method, we are returning the object itself, so that we can use a chained notation (as we will see below).</p>
+<p>Then, we can print the class <code>Students</code></p>
+<pre class="r"><code>Students</code></pre>
+<pre><code>## &lt;Students&gt; object generator
+##   Public:
+##     n_students: 0
+##     ids: NULL
+##     names: NULL
+##     add_student: function (id, name, ...) 
+##     clone: function (deep = FALSE) 
+##   Parent env: &lt;environment: R_GlobalEnv&gt;
+##   Locked objects: TRUE
+##   Locked class: FALSE
+##   Portable: TRUE</code></pre>
+<p>To create an object from the <code>Students</code> class, all we have to do is using the <code>ClassNAme$new()</code> notation</p>
+<pre class="r"><code>STAT294 &lt;- Students$new()
+STAT294</code></pre>
+<pre><code>## &lt;Students&gt;
+##   Public:
+##     add_student: function (id, name, ...) 
+##     clone: function (deep = FALSE) 
+##     ids: NULL
+##     n_students: 0
+##     names: NULL</code></pre>
+<p>After creating an object, we can access its attributes and methods in the following way</p>
+<pre class="r"><code>STAT294$n_students</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>STAT294$ids</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>STAT294$names</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>STAT294$add_student(id = 179600, name = &#39;ANDRE&#39;)
+
+# We can also see the object attributes by printing it.
+STAT294</code></pre>
+<pre><code>## &lt;Students&gt;
+##   Public:
+##     add_student: function (id, name, ...) 
+##     clone: function (deep = FALSE) 
+##     ids: 179600
+##     n_students: 1
+##     names: ANDRE</code></pre>
+<p>Also, as we returned <code>self</code> in the <code>add_students()</code> method, we can do the following</p>
+<pre class="r"><code>STAT294$add_student(id = 111111, name = &#39;MARIA&#39;)$add_student(id = 222222, name = &#39;JOHN&#39;)
+
+# We can also see the object attributes by printing it.
+STAT294</code></pre>
+<pre><code>## &lt;Students&gt;
+##   Public:
+##     add_student: function (id, name, ...) 
+##     clone: function (deep = FALSE) 
+##     ids: 179600 111111 222222
+##     n_students: 3
+##     names: ANDRE MARIA JOHN</code></pre>
+<p>From the above, notice that now we have 3 students (also including <code>ANDRE</code>) in the <code>STAT294</code> object, meaning that changes in <code>R6</code> objects are preserved (without having to assign it to other variable, as we usually do in <code>R</code>).</p>
+<div class="space">
+
+</div>
+</div>
+<div id="important-methods" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Important methods</h3>
+<div class="space">
+
+</div>
+<p>As in the <a href="https://adv-r.hadley.nz/r6.html#r6-important-methods"><code>Advanced R</code> book</a>, there are two important methods that we might want to use when creating a class in <code>R6</code>, namely <code>initialize()</code> and <code>print()</code>. <code>initialize()</code> is executed when an object is created, and <code>print()</code> is executed when we try to print the object. Let’s see how they work.</p>
+<pre class="r"><code>Students &lt;- R6Class(classname = &#39;Students&#39;, public = list(
+  n_students = 0,
+  ids = c(),
+  names = c(), 
+  initialize = function (ids, names, ...) {
+    if (length(ids) != length(names)) { stop(&#39;length(ids) != length(names)&#39;) }
+    self$n_students &lt;- self$n_students + length(ids)
+    self$ids &lt;- c(self$ids, ids)
+    self$names &lt;- c(self$names, names)
+  },
+  print = function (...) {
+    cat(&#39;Number of students: &#39;, self$n_students, &#39;. \n&#39;, sep = &#39;&#39;)
+    cat(&#39;IDs: &#39;, paste(self$ids, collapse = &#39;, &#39;), &#39;.\n&#39;, sep = &#39;&#39;)
+    cat(&#39;Students: &#39;, paste(self$names, collapse = &#39;, &#39;), &#39;.\n&#39;, sep = &#39;&#39;)
+    invisible(self)
+  },
+  add_student = function (id, name, ...) {
+    if ((length(id) &gt; 1) | (length(name) &gt; 1)) { stop(&#39;Only one student should be added each time.&#39;) }
+    self$n_students &lt;- self$n_students + 1
+    self$ids &lt;- c(self$ids, id)
+    self$names &lt;- c(self$names, name)
+    invisible(self)
+  }
+)) </code></pre>
+<p>Now, we can create another object and add students at the same time. And when printing the object, the <code>print()</code> method from the <code>Students</code> class will be called.</p>
+<pre class="r"><code>STAT394 &lt;- Students$new(ids = c(123456, 654321), names = c(&#39;PAULA&#39;, &#39;JONATHAN&#39;))
+STAT394</code></pre>
+<pre><code>## Number of students: 2. 
+## IDs: 123456, 654321.
+## Students: PAULA, JONATHAN.</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="inheritance" class="section level3" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Inheritance</h3>
+<p>If we want to inherit the behavior from a parent class (e.g., <code>Students</code>), all we have to do is creating a child class with the parameter <code>inherit = ParentClass</code>, as follows</p>
+<pre class="r"><code>StudentsV2 &lt;- R6Class(classname = &#39;StudentsV2&#39;, inherit = Students, public = list(
+  remove_student = function (id) {
+    if (length(id) &gt; 1) { stop(&#39;Only one student can be removed each time.&#39;) }
+    id_tbd &lt;- which(id %in% self$ids)
+    self$ids &lt;- self$ids[-id_tbd]
+    self$names &lt;- self$names[-id_tbd]
+    
+    invisible(self)
+  }
+))
+
+STAT494 &lt;- StudentsV2$new(ids = c(123123, 321321), names = c(&#39;JAMES&#39;, &#39;MARY&#39;))
+STAT494</code></pre>
+<pre><code>## Number of students: 2. 
+## IDs: 123123, 321321.
+## Students: JAMES, MARY.</code></pre>
+<pre class="r"><code>STAT494$remove_student(id = 123123)
+STAT494</code></pre>
+<pre><code>## Number of students: 2. 
+## IDs: 321321.
+## Students: MARY.</code></pre>
+<p>Notice that, although we created an object based on the <code>StudentsV2</code> class, we still have access to all attributes and methods from the parent class (<code>Students</code>). Also, we extended it by including the <code>remove_students()</code> method.</p>
+<p>More about <code>R6</code> can be seen <a href="https://adv-r.hadley.nz/r6.html">here</a>.</p>
+<div class="space">
+
+</div>
+</div>
+</div>
+</div>
+<div id="example-using-s3" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Example using <code>S3</code></h1>
+<p>Aiming to practice what we have just learned, we will code a program that could be useful when grading the students from <code>STAT 294</code>.</p>
+<div class="space">
+
+</div>
+<div id="creating-new-classes-2" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Creating new classes</h2>
+<p>To do so, we will start by creating a class for the <code>students</code>.</p>
+<pre class="r"><code># Students
+students &lt;- function (names = character(), ...) {
+  stopifnot(is.character(names))
+  structure(list(names = names), class = &#39;students&#39;)
+}
+
+stds_names &lt;- sort(c(&#39;ANA&#39;, &#39;HATOON&#39;, &#39;KARLA&#39;, &#39;MALIK&#39;, &#39;MARTINA&#39;, &#39;QILONG&#39;, &#39;RUIMAN&#39;, &#39;YASMEEN&#39;))
+stds &lt;- students(names = stds_names)
+stds</code></pre>
+<pre><code>## $names
+## [1] &quot;ANA&quot;     &quot;HATOON&quot;  &quot;KARLA&quot;   &quot;MALIK&quot;   &quot;MARTINA&quot; &quot;QILONG&quot;  &quot;RUIMAN&quot; 
+## [8] &quot;YASMEEN&quot;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;students&quot;</code></pre>
+<p>Notice that many other information about students could have been included here (e.g., <code>id</code>, <code>age</code>, etc.), but for this example, we are only interested in their <code>names</code>.</p>
+<p>Now, let’s create a class for the projects. In this case, I will create a separate function for validation, namely <code>validade_projects()</code>.</p>
+<pre class="r"><code># Projects
+validate_projects &lt;- function (students, prjs_title, grades, ...) {
+  if (!(&#39;students&#39; %in% class(students))) {
+    stop(&#39;&quot;students&quot; should be an object of class &quot;students&quot;.&#39;)
+  } else if (!is.character(prjs_title)) {
+    stop(&#39;&quot;prjs_title&quot; should be an object of class &quot;character&quot;.&#39;)
+  } else if (!is.numeric(grades)) {
+    stop(&#39;&quot;grades&quot; should be an object of class &quot;numeric&quot;.&#39;)
+  } else if (!is.matrix(grades)) {
+    stop(&#39;&quot;grades&quot; should be a matrix.&#39;)
+  }
+  
+  names &lt;- students$names
+  n_std &lt;- length(names)
+  n_prj &lt;- length(prjs_title)
+  
+  if (nrow(grades) != n_std) {
+    stop(paste(&#39;&quot;grades&quot; matrix should have&#39;, n_std, &#39;rows.&#39;))
+  } else if (ncol(grades) != n_prj) {
+    stop(paste(&#39;&quot;grades&quot; matrix should have&#39;, n_prj, &#39;cols.&#39;))
+  }
+}
+
+projects &lt;- function(students, prjs_title = character(), grades = numeric(), ...) {
+  validate_projects(students = students, prjs_title = prjs_title, grades = grades)
+  structure(list(names = students$names,
+                 projects = prjs_title,
+                 grades = grades), class = &#39;projects&#39;)
+}
+
+prjs_title &lt;- c(&#39;Dashboard&#39;, &#39;Shiny App&#39;, &#39;R package&#39;)
+prjs_grade &lt;- matrix(data = round(runif(n = (length(stds_names) * length(prjs_title)), min = 0, max = 10)), nrow = length(stds_names), byrow = FALSE)
+
+prjs &lt;- projects(students = stds, prjs_title = prjs_title, grades = prjs_grade)
+prjs</code></pre>
+<pre><code>## $names
+## [1] &quot;ANA&quot;     &quot;HATOON&quot;  &quot;KARLA&quot;   &quot;MALIK&quot;   &quot;MARTINA&quot; &quot;QILONG&quot;  &quot;RUIMAN&quot; 
+## [8] &quot;YASMEEN&quot;
+## 
+## $projects
+## [1] &quot;Dashboard&quot; &quot;Shiny App&quot; &quot;R package&quot;
+## 
+## $grades
+##      [,1] [,2] [,3]
+## [1,]    6    7    4
+## [2,]    5    1    3
+## [3,]    1    5    4
+## [4,]    9    3    5
+## [5,]    9    1    2
+## [6,]    2   10    4
+## [7,]    4    6    4
+## [8,]    4    5    7
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;projects&quot;</code></pre>
+<p>As a remark, notice that the <code>students</code> attribute has to an object of class <code>students</code> (as we defined before). Also, for the <code>prjs</code> object, I have information about students’ names, grades in each project (<code>projects</code>), and the projects themselves.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="creating-auxiliary-functions" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Creating auxiliary functions</h2>
+<p>Now, suppose that we want to implement a function that will randomly select an order for students’ projects presentations. To do so, we will create a function named <code>presentation_schedule()</code>.</p>
+<pre class="r"><code># Utils
+presentation_schedule &lt;- function (x, dates, presentations_per_day) {
+  if (!(class(x) %in% c(&#39;students&#39;, &#39;projects&#39;))) {
+    stop(&#39;&quot;x&quot; should be an object of classes &quot;students&quot; or &quot;projects&quot;.&#39;)
+  } else if (length(x$names) &gt; (length(dates) * presentations_per_day)) {
+    stop(&#39;The number of total presentations is larger than the number of dates times the number of presentations per day.&#39;)
+  }
+  
+  order_names &lt;- sample(x = x$names, size = length(x$names), replace = FALSE)
+  prest_sched &lt;- matrix(data = NA, nrow = presentations_per_day, ncol = length(dates))
+  
+  count &lt;- 1
+  for (j in 1:ncol(prest_sched)) {
+    for (i in 1:nrow(prest_sched)) {
+      if (count &lt;= length(order_names)) {
+        prest_sched[i, j] &lt;- order_names[count] 
+      }
+      count &lt;- count + 1
+    }
+  }
+  
+  prest_sched &lt;- as.data.frame(prest_sched)
+  colnames(prest_sched) &lt;- dates
+  prest_sched
+}
+
+presentation_schedule(x = stds, dates = c(&#39;Monday&#39;, &#39;Thursday&#39;), presentations_per_day = 5)</code></pre>
+<pre><code>##    Monday Thursday
+## 1   MALIK      ANA
+## 2 MARTINA  YASMEEN
+## 3  QILONG   HATOON
+## 4   KARLA     &lt;NA&gt;
+## 5  RUIMAN     &lt;NA&gt;</code></pre>
+<p>For the <code>presentation_schedule()</code> function, notice that we also require <code>x</code> to be an object of class <code>students</code> <strong>or</strong> <code>projects</code>.</p>
+<div class="space">
+
+</div>
+</div>
+<div id="extending-generic-functions" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Extending generic functions</h2>
+<p>Now that we have objects from two new classes, namely <code>students</code> and <code>projects</code>, we can define new behaviors for <strong>generic functions</strong> (also, we could create our own generic functions). In particular, we will code new behaviors for the functions <code>print()</code>, <code>summary()</code>, and <code>plot()</code>.</p>
+<div class="space">
+
+</div>
+<div id="print" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> <code>print()</code></h3>
+<p>Let’s start by creating a method <code>print.projects()</code>. So, different from the standard output, we would like to print a data frame for the all grades with meaningful row and column names.</p>
+<pre class="r"><code># Before
+print(prjs)</code></pre>
+<pre><code>## $names
+## [1] &quot;ANA&quot;     &quot;HATOON&quot;  &quot;KARLA&quot;   &quot;MALIK&quot;   &quot;MARTINA&quot; &quot;QILONG&quot;  &quot;RUIMAN&quot; 
+## [8] &quot;YASMEEN&quot;
+## 
+## $projects
+## [1] &quot;Dashboard&quot; &quot;Shiny App&quot; &quot;R package&quot;
+## 
+## $grades
+##      [,1] [,2] [,3]
+## [1,]    6    7    4
+## [2,]    5    1    3
+## [3,]    1    5    4
+## [4,]    9    3    5
+## [5,]    9    1    2
+## [6,]    2   10    4
+## [7,]    4    6    4
+## [8,]    4    5    7
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;projects&quot;</code></pre>
+<pre class="r"><code>print.projects &lt;- function (x, ...) {
+  names &lt;- x$names
+  projects &lt;- x$projects
+  grades &lt;- x$grades
+  
+  obj &lt;- as.data.frame(grades)
+  rownames(obj) &lt;- names
+  colnames(obj) &lt;- projects
+  
+  print(obj)
+  invisible(obj)
+}
+
+# After
+print(prjs)</code></pre>
+<pre><code>##         Dashboard Shiny App R package
+## ANA             6         7         4
+## HATOON          5         1         3
+## KARLA           1         5         4
+## MALIK           9         3         5
+## MARTINA         9         1         2
+## QILONG          2        10         4
+## RUIMAN          4         6         4
+## YASMEEN         4         5         7</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="summary" class="section level3" number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> <code>summary()</code></h3>
+<p>Now, suppose that we would like to have quick access to a few summary statistics (e.g., <code>mean</code>, <code>sd</code>, <code>min</code>, <code>max</code>, etc.) of the students’ grades. To do this, we can define a new behavior for <code>summary()</code> by creating the <code>summary.projects()</code> function.</p>
+<pre class="r"><code>summary.projects &lt;- function (object, ...) {
+  projects &lt;- object$projects
+  grades &lt;- object$grades
+  
+  for (i in 1:length(projects)) {
+    cat(projects[i], &#39;\n&#39;, sep = &#39;&#39;)
+    cat(&#39;mean: &#39;, mean(grades[, i]), &#39;\n&#39;, sep = &#39;&#39;)
+    cat(&#39;sd:   &#39;,   sd(grades[, i]), &#39;\n&#39;, sep = &#39;&#39;)
+    cat(&#39;min:  &#39;,  min(grades[, i]), &#39;\n&#39;, sep = &#39;&#39;)
+    cat(&#39;max:  &#39;,  max(grades[, i]), &#39;\n \n&#39;, sep = &#39;&#39;)
+  }
+}
+
+summary(prjs)</code></pre>
+<pre><code>## Dashboard
+## mean: 5
+## sd:   2.9277
+## min:  1
+## max:  9
+##  
+## Shiny App
+## mean: 4.75
+## sd:   3.058945
+## min:  1
+## max:  10
+##  
+## R package
+## mean: 4.125
+## sd:   1.457738
+## min:  2
+## max:  7
+## </code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="plot" class="section level3" number="3.3.3">
+<h3><span class="header-section-number">3.3.3</span> <code>plot()</code></h3>
+<p>Finally, let’s create some customized plots. Here, we will add a different behavior for <code>plot()</code> function. But different from what we have just done for the <code>print()</code> and <code>summary()</code> functions, we will also allow different outputs for the same object depending on the value of an additional parameter (<code>type</code>). So, let’s create our <code>plot.projects()</code> function.</p>
+<pre class="r"><code>library(reshape2)
+
+plot.projects &lt;- function (x, type = &#39;boxplot&#39;, special_font = TRUE, ...) {
+  names &lt;- x$names
+  projects &lt;- x$projects
+  grades &lt;- x$grades
+  
+  obj &lt;- as.data.frame(grades)
+  obj[&#39;NAMES&#39;] &lt;- names
+  rownames(obj) &lt;- names
+  colnames(obj) &lt;- c(projects, &#39;NAMES&#39;)
+  
+  long_obj &lt;- reshape2::melt(data = obj)
+  
+  if (type == &#39;boxplot&#39;) {
+    if (special_font) { par(family = &#39;LM Roman 10&#39;, las = 1) } else { par(family = &#39;&#39;, las = 1) }
+    boxplot(formula = value ~ variable, data = long_obj, xlab = &#39;Projects&#39;, ylab = &#39;Grades&#39;, main = &#39;Distribution of grades for all projects&#39;)
+  } else if (type == &#39;points&#39;) {
+    if (special_font) { par(family = &#39;LM Roman 10&#39;, las = 2) } else { par(family = &#39;&#39;, las = 2) }
+    plot(NA, xlim = c(1, length(names)), ylim = c(0, (max(grades) * 1.25 )), xlab = &#39;&#39;, ylab = &#39;Grades&#39;, main = &#39;Students\&#39; grades for all projects&#39;, xaxt = &#39;n&#39;)
+    axis(1, at = seq(1, length(names)), labels = names)
+    for (i in 1:(length(projects))) {
+      points(x = seq(1, length(names)), y = obj[ , i], col = (i + 1), pch = 19)
+    }
+    legend(x = &#39;topright&#39;, legend = projects, pch = rep(19, length(projects)), col = seq(2, (length(projects) + 1)))
+  } else {
+    stop(&#39;Select a valid &quot;type&quot;.&#39;)
+  }
+}</code></pre>
+<p>As a comment, notice that we are internally using the <code>melt()</code> function from the <code>reshape2</code> package. To use our <code>plot.projects()</code> function, we can do as follows</p>
+<pre class="r"><code>plot(x = prjs, type = &#39;points&#39;)</code></pre>
+<pre><code>## Using NAMES as id variables</code></pre>
+<p><img src="oop_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<pre class="r"><code>plot(x = prjs) # &quot;type = &#39;boxplot&#39;&quot; is the default</code></pre>
+<pre><code>## Using NAMES as id variables</code></pre>
+<p><img src="oop_files/figure-html/unnamed-chunk-33-2.png" width="672" /></p>
+<div class="space">
+
+</div>
+</div>
+</div>
+<div id="complete-program" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Complete program</h2>
+<p>The entire code for this section can be seen below.</p>
+<pre class="r"><code>library(reshape2)
+
+# Students
+students &lt;- function (names = character(), ...) {
+  stopifnot(is.character(names))
+  structure(list(names = names), class = &#39;students&#39;)
+}
+
+# Projects
+validate_projects &lt;- function (students, prjs_title, grades, ...) {
+  if (!(&#39;students&#39; %in% class(students))) {
+    stop(&#39;&quot;students&quot; should be an object of class &quot;students&quot;.&#39;)
+  } else if (!is.character(prjs_title)) {
+    stop(&#39;&quot;prjs_title&quot; should be an object of class &quot;character&quot;.&#39;)
+  } else if (!is.numeric(grades)) {
+    stop(&#39;&quot;grades&quot; should be an object of class &quot;numeric&quot;.&#39;)
+  } else if (!is.matrix(grades)) {
+    stop(&#39;&quot;grades&quot; should be a matrix.&#39;)
+  }
+  
+  names &lt;- students$names
+  n_std &lt;- length(names)
+  n_prj &lt;- length(prjs_title)
+  
+  if (nrow(grades) != n_std) {
+    stop(paste(&#39;&quot;grades&quot; matrix should have&#39;, n_std, &#39;rows.&#39;))
+  } else if (ncol(grades) != n_prj) {
+    stop(paste(&#39;&quot;grades&quot; matrix should have&#39;, n_prj, &#39;cols.&#39;))
+  }
+}
+
+projects &lt;- function(students, prjs_title = character(), grades = numeric(), ...) {
+  validate_projects(students = students, prjs_title = prjs_title, grades = grades)
+  structure(list(names = students$names,
+                 projects = prjs_title,
+                 grades = grades), class = &#39;projects&#39;)
+}
+
+# Utils
+presentation_schedule &lt;- function (x, dates, presentations_per_day) {
+  if (!(class(x) %in% c(&#39;students&#39;, &#39;projects&#39;))) {
+    stop(&#39;&quot;x&quot; should be an object of classes &quot;students&quot; or &quot;projects&quot;.&#39;)
+  } else if (length(x$names) &gt; (length(dates) * presentations_per_day)) {
+    stop(&#39;The number of total presentations is larger than the number of dates times the number of presentations per day.&#39;)
+  }
+  
+  order_names &lt;- sample(x = x$names, size = length(x$names), replace = FALSE)
+  prest_sched &lt;- matrix(data = NA, nrow = presentations_per_day, ncol = length(dates))
+  
+  count &lt;- 1
+  for (j in 1:ncol(prest_sched)) {
+    for (i in 1:nrow(prest_sched)) {
+      if (count &lt;= length(order_names)) {
+        prest_sched[i, j] &lt;- order_names[count] 
+      }
+      count &lt;- count + 1
+    }
+  }
+  
+  prest_sched &lt;- as.data.frame(prest_sched)
+  colnames(prest_sched) &lt;- dates
+  prest_sched
+}
+
+
+# Generic functions
+print.projects &lt;- function (x, ...) {
+  names &lt;- x$names
+  projects &lt;- x$projects
+  grades &lt;- x$grades
+  
+  obj &lt;- as.data.frame(grades)
+  rownames(obj) &lt;- names
+  colnames(obj) &lt;- projects
+  
+  print(obj)
+  invisible(obj)
+}
+# rm(print.projects)
+
+summary.projects &lt;- function (object, ...) {
+  projects &lt;- object$projects
+  grades &lt;- object$grades
+  
+  for (i in 1:length(projects)) {
+    cat(projects[i], &#39;\n&#39;, sep = &#39;&#39;)
+    cat(&#39;mean: &#39;, mean(grades[, i]), &#39;\n&#39;, sep = &#39;&#39;)
+    cat(&#39;sd:   &#39;,   sd(grades[, i]), &#39;\n&#39;, sep = &#39;&#39;)
+    cat(&#39;min:  &#39;,  min(grades[, i]), &#39;\n&#39;, sep = &#39;&#39;)
+    cat(&#39;max:  &#39;,  max(grades[, i]), &#39;\n \n&#39;, sep = &#39;&#39;)
+  }
+}
+
+plot.projects &lt;- function (x, type = &#39;boxplot&#39;, special_font = TRUE, ...) {
+  names &lt;- x$names
+  projects &lt;- x$projects
+  grades &lt;- x$grades
+  
+  obj &lt;- as.data.frame(grades)
+  obj[&#39;NAMES&#39;] &lt;- names
+  rownames(obj) &lt;- names
+  colnames(obj) &lt;- c(projects, &#39;NAMES&#39;)
+  
+  long_obj &lt;- melt(data = obj)
+  
+  if (type == &#39;boxplot&#39;) {
+    if (special_font) { par(family = &#39;LM Roman 10&#39;) } else { par(family = &#39;&#39;) }
+    boxplot(formula = value ~ variable, data = long_obj, xlab = &#39;Projects&#39;, ylab = &#39;Grades&#39;, main = &#39;Distribution of grades for all projects&#39;)
+  } else if (type == &#39;points&#39;) {
+    if (special_font) { par(family = &#39;LM Roman 10&#39;) } else { par(family = &#39;&#39;) }
+    plot(NA, xlim = c(1, length(names)), ylim = c(0, (max(grades) * 1.25 )), xlab = &#39;Students&#39;, ylab = &#39;Grades&#39;, main = &#39;Students\&#39; grades for all projects&#39;, xaxt = &#39;n&#39;)
+    axis(1, at = seq(1, length(names)), labels = names)
+    for (i in 1:(length(projects))) {
+      points(x = seq(1, length(names)), y = obj[ , i], col = (i + 1), pch = 19)
+    }
+    legend(x = &#39;topright&#39;, legend = projects, pch = rep(19, length(projects)), col = seq(2, (length(projects) + 1)))
+  } else {
+    stop(&#39;Select a valid &quot;type&quot;.&#39;)
+  }
+}
+
+# Main code
+
+stds_names &lt;- sort(c(&#39;ANA&#39;, &#39;HATOON&#39;, &#39;KARLA&#39;, &#39;MALIK&#39;, &#39;MARTINA&#39;, &#39;QILONG&#39;, &#39;RUIMAN&#39;, &#39;YASMEEN&#39;))
+prjs_title &lt;- c(&#39;Dashboard&#39;, &#39;Shiny App&#39;, &#39;R package&#39;)
+prjs_grade &lt;- matrix(data = round(runif(n = (length(stds_names) * length(prjs_title)), min = 0, max = 10)), nrow = length(stds_names), byrow = FALSE)
+
+stds &lt;- students(names = stds_names)
+prjs &lt;- projects(students = stds, prjs_title = prjs_title, grades = prjs_grade)
+
+presentation_schedule(x = stds, dates = c(&#39;Monday&#39;, &#39;Thursday&#39;), presentations_per_day = 5)
+
+print(x = prjs)
+summary(object = prjs)
+plot(x = prjs, type = &#39;points&#39;)
+plot(x = prjs, type = &#39;boxplot&#39;)</code></pre>
+<div class="space">
+
+</div>
+</div>
+<div id="final-comments" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Final comments</h2>
+<p>As a remark, notice that this small project (after some changes; for instance, by writing a proper documentation for all functions) could have been done as an <code>R</code> package. To see how to do this, refer to <a href="rpack.html">this tutorial</a>.</p>
+</div>
 </div>
 
 

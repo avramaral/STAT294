@@ -10,4 +10,703 @@ output:
 
 # Introduction
 
-In this tutorial, we will introduce the Object Oriented Programming (OOP) paradigm in R. Although, `R` can be seen more as a [Functional Language](https://en.wikipedia.org/wiki/Functional_programming), different OOP systems can be used. In particular, we will cover `S3` and `R6` (as we will define below). The main reference here is the [`Advanced R` book](https://adv-r.hadley.nz/index.html).
+In this tutorial, we will introduce the Object Oriented Programming (OOP) paradigm in `R`. Although, `R` can be seen more as a [Functional Language](https://en.wikipedia.org/wiki/Functional_programming), different OOP systems can be used. In particular, we will cover `S3` and `R6` (as we will define below). The main reference here is the [`Advanced R` book](https://adv-r.hadley.nz/index.html).
+
+---
+
+Different from other programming languages, there are (at least) 4 different OOP systems available in `R`, namely, `S3`, `S4`, `RC` (which stands for Reference Class), and `R6` (from the `R6` package). Also, although OOP is important in `R`, `R` can be seen as an Functional Language, that is, a language made of *first-class functions* (functions that behave like any other data structure) that are used to solve problems.
+
+In this regard, we also have to make the distinction between **encapsulated OOP** and **functional OOP**. The former works like in most of the other languages (e.g., Python, Java, etc.), in which the methods belong to objects or classes, and *method calls* typically look like `object.method(arg)`, and the latter works through generic functions, and *method calls* look like ordinary function calls, as in `generic(arg)`.
+
+In `R`,
+
+- `S3` is an informal implementation of **functional OOP** and relies on common conventions. Functions have different behaviors depending on the arguments’ class.
+- `S4` is a formal and rigorous rewrite of `S3`. It is also an implementation of **functional OOP**.
+- `RC` implements **encapsulated OOP**.
+- `R6` implements **encapsulated OOP**, like `RC`, but resolves some issues.
+
+<div class = 'space'></div>
+
+# OOP
+
+In Object Oriented Programming (OOP) paradigm (more specifically, in **encapsulated OOP**), we have (among other concepts) **classes**, **objects**, **methods**, and **attributes**. Roughly speaking, a `class` is a definition of an object, an `object` is an instance of a class created with specifically defined data, a `method` is a function that describes the behavior of an object, and an `attribute` is a variable associated with an object that represents its state.
+
+However, In **base** `R`, things are a bit different. Although one may see online that “*everything that exists in `R` is an object*”, we have to distinct **base objects** from **OO objects**. OO objects have a class attribute. For instance,
+```{r}
+ch <- character()
+is.object(x = ch)
+df <- as.data.frame(matrix(data = rnorm(n = 4), nrow = 2, ncol = 2))
+is.object(x = df)
+attr(ch, 'class')
+attr(df, 'class')
+```
+
+Every object has a base type, though.  You can access it with the `typeof()` function.
+```{r}
+typeof(ch)
+typeof(df)
+```
+
+<div class = 'space'></div>
+
+## `S3`
+
+`S3` is the simplest OOP implemented system. As it is a **functional OOP** implementation, it will not follow the commonly used notation for creating objects and calling methods (e.g., `object.method(arg)`); instead we will mostly use them along with **polymorphic** functions (i.e., functions that behave differently depending on their input).
+
+Let's start with the following example
+```{r}
+fact <- factor(x = c(1, 2, 1, 1, 2), levels = c(1, 2), labels = c('first', 'second'))
+fact
+is.object(x = fact)
+attr(fact, 'class')
+typeof(x = fact)
+attributes(fact)
+```
+
+Notice that `fact` is an OO object with class `factor`. In this regard, we can get the underlying base type of `fact` by using the `unclass()` function.
+```{r}
+unclass(fact)
+```
+
+A (not so) easy way to test if an object is a `S3` object is doing the following (i.e., testing if it is a OO object and if it is **not** a `S4` object)
+```{r}
+is.object(fact) & (!isS4(fact))
+```
+
+<div class = 'space'></div>
+
+### Generic functions 
+
+However, the main advantage of using such a system is related to the **generic functions**. In that case, depending on the input class, the functions behaves differently. For instance, let's see how the `summary()` function works with `fact` and with the data frame `df`.
+```{r}
+summary(fact)
+summary(df)
+```
+
+For the `fact` object, `summary()` returns the count of observations in each class, and for the `df` object, it returns a few statistics that can be computed for each numeric vector (represented by `df`'s columns).
+
+If we want to check if a particular function is a **generic function**, we can use the `ftype()` function from the `sloop` package.
+```{r}
+library(sloop)
+sloop::ftype(f = summary)
+```
+
+Also, if we want to see how `summary(fact)` is different from `summary(nv)`, we can call `summary.factor` and `summary.data.frame`.
+```{r}
+summary.factor
+summary.data.frame
+```
+
+<div class = 'space'></div>
+
+### Creating new classes
+
+Now, let's create a new class and make an object that is an instance of such a class. This can be done using the `structure()` function, or in a two-step procedure
+```{r}
+# One step
+obj <- structure('André', class = 'person')
+# Two steps
+obj <- 'André'
+class(obj) <- 'person'
+attr(obj, 'class')
+
+is.object(obj)
+```
+
+However, because there is no validation on the how a class can be assigned to an object, when creating a new class, it is better to provide at least three functions: a *constructor*, a *validator*, and a *helper*.
+
+```{r, error = TRUE}
+# Constructor
+new_person <- function (x = character()) {
+  if (!is.character(x)) { stop('"x" should be a "character".') }
+  structure(x, class = 'person')
+}
+
+obj <- new_person(1)
+obj <- new_person('André')
+attr(obj, 'class')
+
+# Validator
+validate_person <- function (x) {
+  values <- unclass(x)
+  if (length(values) == 0) { stop('Object of this class must be have length >= 1.') }
+  x
+}
+obj <- validate_person(new_person(character()))
+obj <- validate_person(new_person('André'))
+print.default(obj)
+
+
+# Helper (coerce the input to a valid value)
+person <- function (x) { # same name as the class
+  if (length(x) == 0) { x <- 'André' }
+  validate_person(new_person(x))
+}
+obj <- person(character())
+print.default(obj)
+```
+Since we have a new class, we can also code new behaviors for any **generic function** we want. For instance, we can customize the `print()` function for an object of class `person`. To do so, we can use the notation `generic_function.class_name()` when creating the functions; in particular
+```{r}
+print.person <- function (x, ...) {
+  x <- unclass(x)
+  m <- paste('Hi, my name is ', x, '.', sep = '')
+  print(m)
+  invisible(m)
+}
+
+print(obj)
+```
+
+To obtain a list of the possible choices for `arg` in `print(arg)`, one can use the `sloop::s3_methods_generic()` function.
+```{r}
+sloop::s3_methods_generic('print')$class
+```
+
+
+<div class = 'space'></div>
+
+### Creating new generic functions
+
+As the `summary()` and `print()` functions, we can also create our own **generic functions**. To do so, we have to use the `UseMethod()` function. For example, we will create the `display()` function that will "mimic" the `print()` function output.
+```{r}
+display <- function (x, ...) {
+  UseMethod('display')
+}
+```
+
+Now, all we have to do is creating the specific behaviors depending on the object class.
+```{r}
+display.person <- function (x, ...) {
+  x <- unclass(x)
+  m <- paste(x, ' is a person.', sep = '')
+  print(m)
+  invisible(m)
+}
+
+display.animal <- function (x, ...) {
+  x <- unclass(x)
+  m <- paste(x, ' is an animal', sep = '')
+  print(m)
+  invisible(m)
+}
+```
+
+We can create objects from the `person` and `animal` (and others) classes as before.
+```{r}
+p <- person('André')
+a <- structure('Dog', class = 'animal')
+o <- structure('Key', class = 'object')
+```
+
+And then, using the `display()` function for each of these objects.
+```{r, error = TRUE}
+display(p)
+display(a)
+display(o)
+```
+
+In the above example, notice that, since we did not create a function `display.object()`, the `display()` function did not any coded behavior for an object with class `object`. To overcome this issue, we can create a `default` behavior for `display()`.
+```{r}
+display.default <- function (x, ...) {
+  x <- unclass(x)
+  m <- paste(x, ' is not a person or an animal.', sep = '')
+  print(m)
+  invisible(m)
+}
+
+display(o)
+```
+
+<div class = 'space'></div>
+
+More about `S3` can be seen [here](https://adv-r.hadley.nz/s3.html).
+
+## `R6` 
+
+`R6` uses the **encapsulated OOP** paradigm, and therefore, it looks more like OOP in other languages. In particular, we will use the `object$method(arg)` notation, which is similar to the `object.method(arg)` notation from, for example, Python.
+
+As in the Introduction, to use the `R6` system, we have to install and load the `R6` library.
+```{r}
+# install.packages('R6')
+library(R6)
+```
+
+<div class = 'space'></div>
+
+### Creating new classes
+
+And from the `R6` package, we will be only interested in the `R6Class()` function to create classes and their methods. To do this, we can proceed as follows
+```{r}
+Students <- R6Class(classname = 'Students', public = list(
+  n_students = 0,
+  ids = c(),
+  names = c(), 
+  add_student = function (id, name, ...) {
+    if ((length(id) > 1) | (length(name) > 1)) { stop('Only one student should be added each time.') }
+    self$n_students <- self$n_students + 1
+    self$ids <- c(self$ids, id)
+    self$names <- c(self$names, name)
+    invisible(self)
+  }
+)) 
+```
+A few things to be noticed from the above code:
+- The class name (`Students`) is the same as the `classname` parameter (`Students`).
+- For the `public` parameter (`private` and `active` also exist), we are defining **attributes** (`n_students`, `ids`, `names`) and **methods** (`add_student()`).
+- Inside the `add_student()` method, we have to use the `self$attribute` notation to refer to the objects' attributes.
+- After calling a method, we are returning the object itself, so that we can use a chained notation (as we will see below).
+
+Then, we can print the class `Students`
+```{r}
+Students
+```
+
+To create an object from the `Students` class, all we have to do is using the `ClassNAme$new()` notation
+```{r}
+STAT294 <- Students$new()
+STAT294
+```
+
+After creating an object, we can access its attributes and methods in the following way
+```{r}
+STAT294$n_students
+STAT294$ids
+STAT294$names
+
+STAT294$add_student(id = 179600, name = 'ANDRE')
+
+# We can also see the object attributes by printing it.
+STAT294
+```
+
+Also, as we returned `self` in the `add_students()` method, we can do the following
+```{r, error = TRUE}
+STAT294$add_student(id = 111111, name = 'MARIA')$add_student(id = 222222, name = 'JOHN')
+
+# We can also see the object attributes by printing it.
+STAT294
+```
+
+From the above, notice that now we have 3 students (also including `ANDRE`) in the `STAT294` object, meaning that changes in `R6` objects are preserved (without having to assign it to other variable, as we usually do in `R`).
+
+<div class = 'space'></div>
+
+### Important methods
+
+<div class = 'space'></div>
+
+As in the [`Advanced R` book](https://adv-r.hadley.nz/r6.html#r6-important-methods), there are two important methods that we might want to use when creating a class in `R6`, namely `initialize()` and `print()`. `initialize()` is executed when an object is created, and `print()` is executed when we try to print the object. Let's see how they work.
+```{r}
+Students <- R6Class(classname = 'Students', public = list(
+  n_students = 0,
+  ids = c(),
+  names = c(), 
+  initialize = function (ids, names, ...) {
+    if (length(ids) != length(names)) { stop('length(ids) != length(names)') }
+    self$n_students <- self$n_students + length(ids)
+    self$ids <- c(self$ids, ids)
+    self$names <- c(self$names, names)
+  },
+  print = function (...) {
+    cat('Number of students: ', self$n_students, '. \n', sep = '')
+    cat('IDs: ', paste(self$ids, collapse = ', '), '.\n', sep = '')
+    cat('Students: ', paste(self$names, collapse = ', '), '.\n', sep = '')
+    invisible(self)
+  },
+  add_student = function (id, name, ...) {
+    if ((length(id) > 1) | (length(name) > 1)) { stop('Only one student should be added each time.') }
+    self$n_students <- self$n_students + 1
+    self$ids <- c(self$ids, id)
+    self$names <- c(self$names, name)
+    invisible(self)
+  }
+)) 
+```
+
+Now, we can create another object and add students at the same time. And when printing the object, the `print()` method from the `Students` class will be called.
+```{r}
+STAT394 <- Students$new(ids = c(123456, 654321), names = c('PAULA', 'JONATHAN'))
+STAT394
+```
+
+<div class = 'space'></div>
+
+### Inheritance
+
+If we want to inherit the behavior from a parent class (e.g., `Students`), all we have to do is creating a child class with the parameter `inherit = ParentClass`, as follows
+```{r}
+StudentsV2 <- R6Class(classname = 'StudentsV2', inherit = Students, public = list(
+  remove_student = function (id) {
+    if (length(id) > 1) { stop('Only one student can be removed each time.') }
+    id_tbd <- which(id %in% self$ids)
+    self$ids <- self$ids[-id_tbd]
+    self$names <- self$names[-id_tbd]
+    
+    invisible(self)
+  }
+))
+
+STAT494 <- StudentsV2$new(ids = c(123123, 321321), names = c('JAMES', 'MARY'))
+STAT494
+STAT494$remove_student(id = 123123)
+STAT494
+```
+
+Notice that, although we created an object based on the `StudentsV2` class, we still have access to all attributes and methods from the parent class (`Students`). Also, we extended it by including the `remove_students()` method.
+
+More about `R6` can be seen [here](https://adv-r.hadley.nz/r6.html).
+
+<div class = 'space'></div>
+
+# Example using `S3`
+
+Aiming to practice what we have just learned, we will code a program that could be useful when grading the students from `STAT 294`. 
+
+<div class = 'space'></div>
+
+## Creating new classes
+
+To do so, we will start by creating a class for the `students`.
+
+```{r}
+# Students
+students <- function (names = character(), ...) {
+  stopifnot(is.character(names))
+  structure(list(names = names), class = 'students')
+}
+
+stds_names <- sort(c('ANA', 'HATOON', 'KARLA', 'MALIK', 'MARTINA', 'QILONG', 'RUIMAN', 'YASMEEN'))
+stds <- students(names = stds_names)
+stds
+```
+
+Notice that many other information about students could have been included here (e.g., `id`, `age`, etc.), but for this example, we are only interested in their `names`.
+
+Now, let's create a class for the projects. In this case, I will create a separate function for validation, namely `validade_projects()`.
+
+```{r}
+
+# Projects
+validate_projects <- function (students, prjs_title, grades, ...) {
+  if (!('students' %in% class(students))) {
+    stop('"students" should be an object of class "students".')
+  } else if (!is.character(prjs_title)) {
+    stop('"prjs_title" should be an object of class "character".')
+  } else if (!is.numeric(grades)) {
+    stop('"grades" should be an object of class "numeric".')
+  } else if (!is.matrix(grades)) {
+    stop('"grades" should be a matrix.')
+  }
+  
+  names <- students$names
+  n_std <- length(names)
+  n_prj <- length(prjs_title)
+  
+  if (nrow(grades) != n_std) {
+    stop(paste('"grades" matrix should have', n_std, 'rows.'))
+  } else if (ncol(grades) != n_prj) {
+    stop(paste('"grades" matrix should have', n_prj, 'cols.'))
+  }
+}
+
+projects <- function(students, prjs_title = character(), grades = numeric(), ...) {
+  validate_projects(students = students, prjs_title = prjs_title, grades = grades)
+  structure(list(names = students$names,
+                 projects = prjs_title,
+                 grades = grades), class = 'projects')
+}
+
+prjs_title <- c('Dashboard', 'Shiny App', 'R package')
+prjs_grade <- matrix(data = round(runif(n = (length(stds_names) * length(prjs_title)), min = 0, max = 10)), nrow = length(stds_names), byrow = FALSE)
+
+prjs <- projects(students = stds, prjs_title = prjs_title, grades = prjs_grade)
+prjs
+```
+
+As a remark, notice that the `students` attribute has to an object of class `students` (as we defined before). Also, for the `prjs` object, I have information about students' names, grades in each project (`projects`), and the projects themselves.
+
+<div class = 'space'></div>
+
+## Creating auxiliary functions
+
+Now, suppose that we want to implement a function that will randomly select an order for students' projects presentations. To do so, we will create a function named `presentation_schedule()`.
+```{r}
+# Utils
+presentation_schedule <- function (x, dates, presentations_per_day) {
+  if (!(class(x) %in% c('students', 'projects'))) {
+    stop('"x" should be an object of classes "students" or "projects".')
+  } else if (length(x$names) > (length(dates) * presentations_per_day)) {
+    stop('The number of total presentations is larger than the number of dates times the number of presentations per day.')
+  }
+  
+  order_names <- sample(x = x$names, size = length(x$names), replace = FALSE)
+  prest_sched <- matrix(data = NA, nrow = presentations_per_day, ncol = length(dates))
+  
+  count <- 1
+  for (j in 1:ncol(prest_sched)) {
+    for (i in 1:nrow(prest_sched)) {
+      if (count <= length(order_names)) {
+        prest_sched[i, j] <- order_names[count] 
+      }
+      count <- count + 1
+    }
+  }
+  
+  prest_sched <- as.data.frame(prest_sched)
+  colnames(prest_sched) <- dates
+  prest_sched
+}
+
+presentation_schedule(x = stds, dates = c('Monday', 'Thursday'), presentations_per_day = 5)
+```
+
+For the `presentation_schedule()` function, notice that we also require `x` to be an object of class `students` **or** `projects`.
+
+<div class = 'space'></div>
+
+## Extending generic functions
+
+Now that we have objects from two new classes, namely `students` and `projects`, we can define new behaviors for **generic functions** (also, we could create our own generic functions). In particular, we will code new behaviors for the functions `print()`, `summary()`, and `plot()`.
+
+<div class = 'space'></div>
+
+### `print()`
+
+Let's start by creating a method `print.projects()`. So, different from the standard output, we would like to print a data frame for the all grades with meaningful row and column names.
+```{r}
+# Before
+print(prjs)
+
+print.projects <- function (x, ...) {
+  names <- x$names
+  projects <- x$projects
+  grades <- x$grades
+  
+  obj <- as.data.frame(grades)
+  rownames(obj) <- names
+  colnames(obj) <- projects
+  
+  print(obj)
+  invisible(obj)
+}
+
+# After
+print(prjs)
+```
+
+<div class = 'space'></div>
+
+### `summary()`
+
+Now, suppose that we would like to have quick access to a few summary statistics (e.g., `mean`, `sd`, `min`, `max`, etc.) of the students' grades. To do this, we can define a new behavior for `summary()` by creating the `summary.projects()` function.
+```{r}
+summary.projects <- function (object, ...) {
+  projects <- object$projects
+  grades <- object$grades
+  
+  for (i in 1:length(projects)) {
+    cat(projects[i], '\n', sep = '')
+    cat('mean: ', mean(grades[, i]), '\n', sep = '')
+    cat('sd:   ',   sd(grades[, i]), '\n', sep = '')
+    cat('min:  ',  min(grades[, i]), '\n', sep = '')
+    cat('max:  ',  max(grades[, i]), '\n \n', sep = '')
+  }
+}
+
+summary(prjs)
+```
+
+<div class = 'space'></div>
+
+### `plot()`
+
+Finally, let's create some customized plots. Here, we will add a different behavior for `plot()` function. But different from what we have just done for the `print()` and `summary()` functions, we will also allow different outputs for the same object depending on the value of an additional parameter (`type`). So, let's create our `plot.projects()` function.
+```{r}
+library(reshape2)
+
+plot.projects <- function (x, type = 'boxplot', special_font = TRUE, ...) {
+  names <- x$names
+  projects <- x$projects
+  grades <- x$grades
+  
+  obj <- as.data.frame(grades)
+  obj['NAMES'] <- names
+  rownames(obj) <- names
+  colnames(obj) <- c(projects, 'NAMES')
+  
+  long_obj <- reshape2::melt(data = obj)
+  
+  if (type == 'boxplot') {
+    if (special_font) { par(family = 'LM Roman 10', las = 1) } else { par(family = '', las = 1) }
+    boxplot(formula = value ~ variable, data = long_obj, xlab = 'Projects', ylab = 'Grades', main = 'Distribution of grades for all projects')
+  } else if (type == 'points') {
+    if (special_font) { par(family = 'LM Roman 10', las = 2) } else { par(family = '', las = 2) }
+    plot(NA, xlim = c(1, length(names)), ylim = c(0, (max(grades) * 1.25 )), xlab = '', ylab = 'Grades', main = 'Students\' grades for all projects', xaxt = 'n')
+    axis(1, at = seq(1, length(names)), labels = names)
+    for (i in 1:(length(projects))) {
+      points(x = seq(1, length(names)), y = obj[ , i], col = (i + 1), pch = 19)
+    }
+    legend(x = 'topright', legend = projects, pch = rep(19, length(projects)), col = seq(2, (length(projects) + 1)))
+  } else {
+    stop('Select a valid "type".')
+  }
+}
+```
+
+As a comment, notice that we are internally using the `melt()` function from the `reshape2` package. To use our `plot.projects()` function, we can do as follows
+```{r}
+plot(x = prjs, type = 'points')
+plot(x = prjs) # "type = 'boxplot'" is the default
+```
+
+<div class = 'space'></div>
+
+## Complete program
+
+The entire code for this section can be seen below.
+
+```{r, eval = FALSE}
+library(reshape2)
+
+# Students
+students <- function (names = character(), ...) {
+  stopifnot(is.character(names))
+  structure(list(names = names), class = 'students')
+}
+
+# Projects
+validate_projects <- function (students, prjs_title, grades, ...) {
+  if (!('students' %in% class(students))) {
+    stop('"students" should be an object of class "students".')
+  } else if (!is.character(prjs_title)) {
+    stop('"prjs_title" should be an object of class "character".')
+  } else if (!is.numeric(grades)) {
+    stop('"grades" should be an object of class "numeric".')
+  } else if (!is.matrix(grades)) {
+    stop('"grades" should be a matrix.')
+  }
+  
+  names <- students$names
+  n_std <- length(names)
+  n_prj <- length(prjs_title)
+  
+  if (nrow(grades) != n_std) {
+    stop(paste('"grades" matrix should have', n_std, 'rows.'))
+  } else if (ncol(grades) != n_prj) {
+    stop(paste('"grades" matrix should have', n_prj, 'cols.'))
+  }
+}
+
+projects <- function(students, prjs_title = character(), grades = numeric(), ...) {
+  validate_projects(students = students, prjs_title = prjs_title, grades = grades)
+  structure(list(names = students$names,
+                 projects = prjs_title,
+                 grades = grades), class = 'projects')
+}
+
+# Utils
+presentation_schedule <- function (x, dates, presentations_per_day) {
+  if (!(class(x) %in% c('students', 'projects'))) {
+    stop('"x" should be an object of classes "students" or "projects".')
+  } else if (length(x$names) > (length(dates) * presentations_per_day)) {
+    stop('The number of total presentations is larger than the number of dates times the number of presentations per day.')
+  }
+  
+  order_names <- sample(x = x$names, size = length(x$names), replace = FALSE)
+  prest_sched <- matrix(data = NA, nrow = presentations_per_day, ncol = length(dates))
+  
+  count <- 1
+  for (j in 1:ncol(prest_sched)) {
+    for (i in 1:nrow(prest_sched)) {
+      if (count <= length(order_names)) {
+        prest_sched[i, j] <- order_names[count] 
+      }
+      count <- count + 1
+    }
+  }
+  
+  prest_sched <- as.data.frame(prest_sched)
+  colnames(prest_sched) <- dates
+  prest_sched
+}
+
+
+# Generic functions
+print.projects <- function (x, ...) {
+  names <- x$names
+  projects <- x$projects
+  grades <- x$grades
+  
+  obj <- as.data.frame(grades)
+  rownames(obj) <- names
+  colnames(obj) <- projects
+  
+  print(obj)
+  invisible(obj)
+}
+# rm(print.projects)
+
+summary.projects <- function (object, ...) {
+  projects <- object$projects
+  grades <- object$grades
+  
+  for (i in 1:length(projects)) {
+    cat(projects[i], '\n', sep = '')
+    cat('mean: ', mean(grades[, i]), '\n', sep = '')
+    cat('sd:   ',   sd(grades[, i]), '\n', sep = '')
+    cat('min:  ',  min(grades[, i]), '\n', sep = '')
+    cat('max:  ',  max(grades[, i]), '\n \n', sep = '')
+  }
+}
+
+plot.projects <- function (x, type = 'boxplot', special_font = TRUE, ...) {
+  names <- x$names
+  projects <- x$projects
+  grades <- x$grades
+  
+  obj <- as.data.frame(grades)
+  obj['NAMES'] <- names
+  rownames(obj) <- names
+  colnames(obj) <- c(projects, 'NAMES')
+  
+  long_obj <- melt(data = obj)
+  
+  if (type == 'boxplot') {
+    if (special_font) { par(family = 'LM Roman 10') } else { par(family = '') }
+    boxplot(formula = value ~ variable, data = long_obj, xlab = 'Projects', ylab = 'Grades', main = 'Distribution of grades for all projects')
+  } else if (type == 'points') {
+    if (special_font) { par(family = 'LM Roman 10') } else { par(family = '') }
+    plot(NA, xlim = c(1, length(names)), ylim = c(0, (max(grades) * 1.25 )), xlab = 'Students', ylab = 'Grades', main = 'Students\' grades for all projects', xaxt = 'n')
+    axis(1, at = seq(1, length(names)), labels = names)
+    for (i in 1:(length(projects))) {
+      points(x = seq(1, length(names)), y = obj[ , i], col = (i + 1), pch = 19)
+    }
+    legend(x = 'topright', legend = projects, pch = rep(19, length(projects)), col = seq(2, (length(projects) + 1)))
+  } else {
+    stop('Select a valid "type".')
+  }
+}
+
+# Main code
+
+stds_names <- sort(c('ANA', 'HATOON', 'KARLA', 'MALIK', 'MARTINA', 'QILONG', 'RUIMAN', 'YASMEEN'))
+prjs_title <- c('Dashboard', 'Shiny App', 'R package')
+prjs_grade <- matrix(data = round(runif(n = (length(stds_names) * length(prjs_title)), min = 0, max = 10)), nrow = length(stds_names), byrow = FALSE)
+
+stds <- students(names = stds_names)
+prjs <- projects(students = stds, prjs_title = prjs_title, grades = prjs_grade)
+
+presentation_schedule(x = stds, dates = c('Monday', 'Thursday'), presentations_per_day = 5)
+
+print(x = prjs)
+summary(object = prjs)
+plot(x = prjs, type = 'points')
+plot(x = prjs, type = 'boxplot')
+```
+
+<div class = 'space'></div>
+
+## Final comments
+
+As a remark, notice that this small project (after some changes; for instance, by writing a proper documentation for all functions) could have been done as an `R` package. To see how to do this, refer to [this tutorial](rpack.html). 
+
